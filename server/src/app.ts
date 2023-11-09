@@ -1,6 +1,7 @@
 import express from 'express'
 import 'express-async-errors'
 import config from './config'
+import compression from 'compression'
 
 // security
 import helmet from 'helmet'
@@ -25,6 +26,7 @@ app.use(helmet())
 app.use(morgan(config.logs.morgan))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+app.use(compression())
 
 // routes
 app.use('/api/v1/eth', ethRoutes)
