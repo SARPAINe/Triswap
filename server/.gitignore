@@ -8,6 +8,8 @@ yarn-error.log*
 .env
 build
 
+TODO.md
+
 # Logs
 logs
 *.log

@@ -1,7 +1,5 @@
 import dotenv from 'dotenv'
 
-process.env.NODE_ENV = process.env.NODE_ENV || 'development'
-
 const envFound = dotenv.config()
 if (envFound.error) {
   throw new Error('No .env file found')
@@ -14,5 +12,8 @@ export default {
   },
   blockchain: {
     rpc_url: process.env.RPC_URL!,
+  },
+  node: {
+    env: process.env.NODE_ENV,
   },
 }
