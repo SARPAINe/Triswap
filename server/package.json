@@ -4,9 +4,9 @@
   "description": "BJIT Swap backend services",
   "main": "./src/server.ts",
   "scripts": {
+    "start": "cross-env NODE_ENV=development nodemon",
+    "start:prod": "cross-env NODE_ENV=production node ./build/server.js",
     "build": "npx tsc",
-    "dev": "nodemon",
-    "start": "node ./build/server.js",
     "lint": "eslint --ignore-path .gitignore --ext .js,.ts",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\""
   },
@@ -19,6 +19,7 @@
     "@types/morgan": "^1.9.9",
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "@typescript-eslint/parser": "^6.10.0",
+    "cross-env": "^7.0.3",
     "eslint": "^8.53.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-config-standard-with-typescript": "^39.1.1",

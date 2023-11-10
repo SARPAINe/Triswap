@@ -1,15 +1,14 @@
 import express from 'express'
 import 'express-async-errors'
-import config from './config'
 import compression from 'compression'
+import config from './config'
 
 // security
 import helmet from 'helmet'
 import cors from 'cors'
 
 // logger
-import morgan from 'morgan'
-
+const morgan = config.logs.morgan
 // routes
 import tokenRoutes from './routes/v1/token.routes'
 import ethRoutes from './routes/v1/eth.routes'
@@ -23,7 +22,7 @@ const app = express()
 app.set('trust proxy', 1)
 app.use(cors())
 app.use(helmet())
-app.use(morgan(config.logs.morgan))
+app.use(morgan)
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(compression())
