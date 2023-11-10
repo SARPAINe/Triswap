@@ -1,4 +1,4 @@
-const toObject = (obj: Object): JSON => {
+const toObject = (obj: object): JSON => {
   return JSON.parse(
     JSON.stringify(
       obj,
