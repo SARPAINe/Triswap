@@ -21,10 +21,10 @@ const sendEth: RequestHandler = async (req, res) => {
   if (!privateKey || !value || !to) {
     throw new BadRequestError('Please provide private key and value')
   }
-  const transacitonReceipt = await ethServices.sendEth(privateKey, value, to)
+  const transactionReceipt = await ethServices.sendEth(privateKey, value, to)
   res.status(StatusCodes.OK).json({
     msg: `transferred ${value} Ethers to ${to}`,
-    transacitonReceipt,
+    transactionReceipt: transactionReceipt,
   })
 }
 
