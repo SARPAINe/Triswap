@@ -7,9 +7,9 @@
     "start": "cross-env NODE_ENV=development nodemon",
     "start:prod": "cross-env NODE_ENV=production node ./build/server.js",
     "build": "npx tsc",
-    "lint": "eslint --ignore-path .gitignore \"**/*.+(js|ts|json)\"",
-    "lint:fix": "eslint --fix --ignore-path .gitignore \"**/*.+(js|ts|json)\"",
-    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
+    "lint": "eslint --ignore-path .eslintignore \"**/*.+(js|ts|json)\"",
+    "lint:fix": "eslint --fix --ignore-path .eslintignore \"**/*.+(js|ts|json)\"",
+    "format": "prettier --ignore-path .prettierignore --write \"**/*.+(js|ts|json)\"",
     "prepare": "cd.. && husky install server/.husky"
   },
   "author": "",
