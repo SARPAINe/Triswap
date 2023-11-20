@@ -16,7 +16,7 @@ const accessLogStream = fs.createWriteStream(
 
 let configuredMorgan
 if (nodeEnv === 'production') {
-  configuredMorgan = morgan('combined', { stream: accessLogStream })
+  configuredMorgan = morgan('combined', { stream: accessLogStream }) // should be in .env
 } else {
   configuredMorgan = morgan('dev')
 }
@@ -31,5 +31,12 @@ export default {
   },
   node: {
     env: process.env.NODE_ENV,
+  },
+  db: {
+    dbName: process.env.DB_DATABASE!,
+    host: process.env.DB_HOST!,
+    user: process.env.DB_USER!,
+    password: process.env.DB_PASSWORD!,
+    authDb: 'authentication', // should be in .env
   },
 }

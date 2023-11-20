@@ -9,7 +9,9 @@ import cors from 'cors'
 
 // logger
 const morgan = config.logs.morgan
+
 // routes
+import authRoutes from './routes/v1/auth.routes'
 import tokenRoutes from './routes/v1/token.routes'
 import ethRoutes from './routes/v1/eth.routes'
 
@@ -28,6 +30,7 @@ app.use(express.urlencoded({ extended: false }))
 app.use(compression())
 
 // routes
+app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/eth', ethRoutes)
 app.use('/api/v1/tokens', tokenRoutes)
 

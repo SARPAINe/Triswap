@@ -1,5 +1,0 @@
-### Get tokens
-GET http://localhost:3000/tokens
-
-### Get Token Contract ABI
-GET http://localhost:3000/tokens/abi
