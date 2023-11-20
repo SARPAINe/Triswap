@@ -10,10 +10,10 @@
     "lint": "eslint --ignore-path .eslintignore \"**/*.+(js|ts|json)\"",
     "lint:fix": "eslint --fix --ignore-path .eslintignore \"**/*.+(js|ts|json)\"",
     "format": "prettier --ignore-path .prettierignore --write \"**/*.+(js|ts|json)\"",
-    "prepare": "cd.. && husky install server/.husky",
+    "prepare": "cd .. && husky install server/.husky",
     "commit": "commit"
   },
-  "author": "",
+  "author": "Ragib Shahariar Ayon",
   "license": "ISC",
   "devDependencies": {
     "@commitlint/cli": "^18.4.0",
