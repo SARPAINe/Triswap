@@ -1,7 +1,7 @@
 import config from './config'
 import app from './app'
 import logger from './logger'
-import { sequelize } from './config/database'
+import { sequelize } from './config/sequelize.config'
 
 const startServer = async () => {
   try {
