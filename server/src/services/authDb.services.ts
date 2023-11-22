@@ -1,3 +1,4 @@
+import CustomAPIError from '../errors/CustomError.error'
 import User from '../models/user.models'
 
 const getUserAuthInfo = async (id: string) => {
@@ -30,9 +31,7 @@ const createUser = async (
     })
     return newUser
   } catch (err) {
-    // throw new CustomAPIError()
-    console.log(typeof err)
-    console.log(err)
+    throw new CustomAPIError('user creation failed')
   }
 }
 

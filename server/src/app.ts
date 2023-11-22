@@ -1,11 +1,8 @@
 import express from 'express'
-import 'express-async-errors'
 import compression from 'compression'
-import session from 'express-session'
-import connectSession from 'connect-session-sequelize'
 import passport from 'passport'
 import config from './config'
-import { sequelize } from './config/sequelize.config'
+import 'express-async-errors'
 
 // security
 import helmet from 'helmet'
@@ -34,35 +31,8 @@ app.use(compression())
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
-// session
-const SequelizeStore = connectSession(session.Store)
-const sessionStore = new SequelizeStore({ db: sequelize })
-app.use(
-  session({
-    secret: 'secret',
-    resave: false,
-    saveUninitialized: true,
-    store: sessionStore,
-    cookie: {
-      maxAge: 1000 * 60 * 60 * 24,
-    },
-  }),
-)
-
-sessionStore.sync()
-
-// passport
 import './config/passport.config'
-
 app.use(passport.initialize())
-app.use(passport.session())
-
-app.use((req, res, next) => {
-  console.log(req.session)
-  console.log(req.user)
-
-  next()
-})
 
 // routes
 app.use('/api/v1/auth', authRoutes)

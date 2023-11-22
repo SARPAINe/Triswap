@@ -37,6 +37,8 @@ export default {
     host: process.env.DB_HOST!,
     user: process.env.DB_USER!,
     password: process.env.DB_PASSWORD!,
-    authDb: 'authentication', // should be in .env
+  },
+  jwt: {
+    secret: process.env.JWT_SECRET,
   },
 }

@@ -30,7 +30,7 @@ const loginUser = async (email: string, password: string) => {
   if (!isPasswordCorrect) {
     throw new UnauthenticatedError('Invalid Credentials')
   }
-  return isPasswordCorrect
+  return { user, isPasswordCorrect }
 }
 
 const getUserAuthInfo = async (userId: string) => {

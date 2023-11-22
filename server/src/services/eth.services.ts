@@ -2,8 +2,7 @@
 // get balance
 
 import { TransactionReceipt, Web3BaseWalletAccount } from 'web3'
-import { connectBC } from '../utils/evm'
-import { toObject } from '../utils/bigInt'
+import { connectBC, toObject } from '../utils'
 
 const getEthBalance = async (privateKey: string) => {
   const web3 = await connectBC()
