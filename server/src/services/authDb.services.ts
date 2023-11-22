@@ -1,10 +1,5 @@
-import CustomAPIError from '../errors/CustomError.error'
+import { ICreateUser } from '../interfaces'
 import User from '../models/user.models'
-
-const getUserAuthInfo = async (id: string) => {
-  const user = await User.findByPk(id)
-  return user
-}
 
 const findUserByEmail = async (email: string) => {
   const user = await User.findOne({ where: { email: email } })
@@ -16,27 +11,14 @@ const findUserById = async (userId: string) => {
   return user
 }
 
-const createUser = async (
-  username: string,
-  email: string,
-  password: string,
-  role: string,
-) => {
-  try {
-    const newUser = await User.create({
-      username,
-      email,
-      password,
-      role,
-    })
-    return newUser
-  } catch (err) {
-    throw new CustomAPIError('user creation failed')
-  }
+const createUser = async (user: ICreateUser) => {
+  const newUser = await User.create({
+    ...user,
+  })
+  return newUser
 }
 
 const authDbServices = {
-  getUserAuthInfo,
   createUser,
   findUserByEmail,
   findUserById,

@@ -1,11 +1,16 @@
 import { RequestHandler } from 'express'
-import { UnauthenticatedError } from '../errors'
+import { UnauthenticatedError, UnauthorizedError } from '../errors'
 import User from '../models/user.models'
 import passport from 'passport'
 
 const isAuthenticated = passport.authenticate('jwt', { session: false })
 
-// Authorization
+const isAuthenticatedLocal: RequestHandler = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next()
+  }
+  throw new UnauthenticatedError('User not authorized to view this resource')
+}
 
 const isAdmin: RequestHandler = (req, res, next) => {
   // assuming passport has attached user
@@ -13,15 +18,7 @@ const isAdmin: RequestHandler = (req, res, next) => {
   if (role === 'ADMIN') {
     return next()
   }
-  throw new UnauthenticatedError('Forbidden - Insufficient privileges')
-}
-
-// for local strategy
-const isAuthenticatedLocal: RequestHandler = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    return next()
-  }
-  throw new UnauthenticatedError('User not authorized to view this resource')
+  throw new UnauthorizedError('Forbidden - Insufficient privileges')
 }
 
 export { isAuthenticated, isAdmin, isAuthenticatedLocal }

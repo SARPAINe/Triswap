@@ -3,11 +3,12 @@ import fs from 'fs'
 import path from 'path'
 import morgan from 'morgan'
 const envFound = dotenv.config()
+
 if (envFound.error) {
   throw new Error('No .env file found')
 }
 
-const nodeEnv = process.env.NODE_ENV
+const nodeEnv = process.env.NODE_ENV!
 
 const accessLogStream = fs.createWriteStream(
   path.join(__dirname, '../..', 'access.log'),
@@ -16,13 +17,13 @@ const accessLogStream = fs.createWriteStream(
 
 let configuredMorgan
 if (nodeEnv === 'production') {
-  configuredMorgan = morgan('combined', { stream: accessLogStream }) // should be in .env
+  configuredMorgan = morgan('combined', { stream: accessLogStream })
 } else {
   configuredMorgan = morgan('dev')
 }
 
 export default {
-  port: parseInt(process.env.PORT!, 10),
+  port: process.env.PORT!,
   logs: {
     morgan: configuredMorgan,
   },
@@ -30,7 +31,7 @@ export default {
     rpc_url: process.env.RPC_URL!,
   },
   node: {
-    env: process.env.NODE_ENV,
+    env: process.env.NODE_ENV!,
   },
   db: {
     dbName: process.env.DB_DATABASE!,
@@ -39,6 +40,6 @@ export default {
     password: process.env.DB_PASSWORD!,
   },
   jwt: {
-    secret: process.env.JWT_SECRET,
+    secret: process.env.JWT_SECRET!,
   },
 }

@@ -6,7 +6,7 @@ import { sequelize } from './config/sequelize.config'
 const startServer = async () => {
   try {
     await sequelize.authenticate()
-    await sequelize.sync({ force: true }) // drops and recreates all tables
+    await sequelize.sync() // drops and recreates all tables
     logger.info('Connection to the database has been established successfully.')
 
     app.listen(config.port, () => {

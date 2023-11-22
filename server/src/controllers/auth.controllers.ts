@@ -2,28 +2,21 @@ import { RequestHandler } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { authServices } from '../services/auth.services'
 import { BadRequestError } from '../errors'
-import { issueJwt } from '../utils'
+import type User from '../models/user.models'
+import { type IJwt, type IUserTokenResponse } from '../interfaces'
 
 const registerUser: RequestHandler = async (req, res) => {
   const { username, email, password, role } = req.body
-  const newUser = await authServices.createUser(username, email, password, role)
-  const jwt = issueJwt(newUser)
 
-  res.status(StatusCodes.CREATED).json({
-    msg: 'user registered',
-    newUser,
-    token: jwt.token,
-    expiresIn: jwt.expiresIn,
-  })
-}
+  const userObj = { username, email, password, role }
+  const { newUser, jwt } = await authServices.createUser(userObj)
 
-const getUser: RequestHandler = async (req, res) => {
-  const { userId } = req.params
-  const userAuthInfo = await authServices.getUserAuthInfo(userId)
-  res.status(StatusCodes.OK).json({
-    msg: 'user logged in',
-    userAuthInfo,
-  })
+  const apiResponse = {
+    success: true,
+    message: 'user has been successfully registered',
+    data: buildUserResponse(newUser, jwt),
+  }
+  res.status(StatusCodes.CREATED).json(apiResponse)
 }
 
 const loginUser: RequestHandler = async (req, res) => {
@@ -33,26 +26,55 @@ const loginUser: RequestHandler = async (req, res) => {
     throw new BadRequestError('Please provide email or password')
   }
 
-  const { user } = await authServices.loginUser(email, password)
-  const jwt = issueJwt(user)
+  const { user, jwt } = await authServices.loginUser(email, password)
 
-  res.status(StatusCodes.OK).json({
-    msg: 'user logged in',
-    token: jwt.token,
-    expiresIn: jwt.expiresIn,
-  })
+  const apiResponse = {
+    success: true,
+    message: 'user has been successfully registered',
+    data: buildUserResponse(user, jwt),
+  }
+  res.status(StatusCodes.OK).json(apiResponse)
 }
 
 const logoutUser: RequestHandler = async (req, res) => {
-  req.logout(err => {
-    if (err) {
-      console.log(err)
-      return res.status(500).send('Error during logout')
+  const apiResponse = {
+    success: true,
+    message: 'user has been successfully logged out',
+  }
+  res.status(StatusCodes.OK).json(apiResponse)
+}
+
+const getUser: RequestHandler = async (req, res) => {
+  const { userId } = req.params
+  const user = await authServices.getUser(userId)
+  if (!user) {
+    throw new BadRequestError('user not found')
+  }
+  const apiResponse = {
+    success: true,
+    message: 'user data has been successfully retrieved',
+    data: buildUserResponse(user),
+  }
+  res.status(StatusCodes.OK).json(apiResponse)
+}
+
+const buildUserResponse = (user: User, token?: IJwt): IUserTokenResponse => {
+  const userResponse = {
+    user: {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    },
+  }
+  if (token) {
+    return {
+      ...userResponse,
+      token: token.token,
+      expiresIn: token.expiresIn,
     }
-    res.status(StatusCodes.OK).json({
-      msg: 'user logged out',
-    })
-  })
+  }
+
+  return userResponse
 }
 
 export { registerUser, loginUser, logoutUser, getUser }

@@ -1,21 +1,20 @@
 import { cryptoServices } from './crypto.services'
 import { authDbServices } from './authDb.services'
 import { UnauthenticatedError } from '../errors'
+import jwt from 'jsonwebtoken'
+import type User from '../models/user.models'
+import { type ICreateUser, type IJwt } from '../interfaces'
+import config from '../config'
 
 const createUser = async (
-  username: string,
-  email: string,
-  password: string,
-  role: string,
-) => {
+  user: ICreateUser,
+): Promise<{ newUser: User; jwt: IJwt }> => {
+  const { password } = user
   const hashedPassword = await cryptoServices.hashPassword(password)
-  const newUser = await authDbServices.createUser(
-    username,
-    email,
-    hashedPassword,
-    role,
-  )
-  return newUser
+  user.password = hashedPassword
+  const newUser = await authDbServices.createUser(user)
+  const jwt = issueJwt(newUser)
+  return { newUser, jwt }
 }
 
 const loginUser = async (email: string, password: string) => {
@@ -30,14 +29,31 @@ const loginUser = async (email: string, password: string) => {
   if (!isPasswordCorrect) {
     throw new UnauthenticatedError('Invalid Credentials')
   }
-  return { user, isPasswordCorrect }
+
+  const jwt = issueJwt(user)
+  return { user, jwt }
 }
 
-const getUserAuthInfo = async (userId: string) => {
-  const result = await authDbServices.getUserAuthInfo(userId)
-  return result
+const getUser = async (userId: string) => {
+  const user = await authDbServices.findUserById(userId)
+  return user
 }
 
-const authServices = { createUser, getUserAuthInfo, loginUser }
+const issueJwt = (user: User) => {
+  const id = user.id
+  const expiresIn = '1d'
+  const payload = {
+    sub: id,
+    iat: Date.now(),
+  }
+  const signedToken = jwt.sign(payload, config.jwt.secret, { expiresIn })
+
+  return {
+    token: 'Bearer ' + signedToken,
+    expiresIn,
+  }
+}
+
+const authServices = { createUser, getUser, loginUser }
 
 export { authServices }
