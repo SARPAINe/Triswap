@@ -2,8 +2,11 @@ import dotenv from 'dotenv'
 import fs from 'fs'
 import path from 'path'
 import morgan from 'morgan'
-const envFound = dotenv.config()
+import { setupDB } from './sequelize.config'
+import { setupTestDBMemory } from './sequelize-test.config'
+import { type Sequelize } from 'sequelize'
 
+const envFound = dotenv.config()
 if (envFound.error) {
   throw new Error('No .env file found')
 }
@@ -22,6 +25,14 @@ if (nodeEnv === 'production') {
   configuredMorgan = morgan('dev')
 }
 
+// based on env set db
+let sequelize: Sequelize
+if (nodeEnv === 'test') {
+  sequelize = setupTestDBMemory()
+} else {
+  sequelize = setupDB()
+}
+
 export default {
   port: process.env.PORT!,
   logs: {
@@ -34,10 +45,7 @@ export default {
     env: process.env.NODE_ENV!,
   },
   db: {
-    dbName: process.env.DB_DATABASE!,
-    host: process.env.DB_HOST!,
-    user: process.env.DB_USER!,
-    password: process.env.DB_PASSWORD!,
+    sequelize,
   },
   jwt: {
     secret: process.env.JWT_SECRET!,

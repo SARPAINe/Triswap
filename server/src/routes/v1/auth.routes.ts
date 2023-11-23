@@ -15,6 +15,6 @@ router.route('/login').post(loginUser)
 router.route('/logout').get(logoutUser)
 
 // protected route
-router.route('/user/:userId').get(isAuthenticated, isAdmin, getUser)
+router.route('/user/:userId').get([isAuthenticated, isAdmin], getUser)
 
 export default router

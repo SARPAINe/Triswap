@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { authServices } from '../services/auth.services'
-import { BadRequestError } from '../errors'
+import { BadRequestError, NotFoundError } from '../errors'
 import type User from '../models/user.models'
 import { type IJwt, type IUserTokenResponse } from '../interfaces'
 
@@ -48,7 +48,7 @@ const getUser: RequestHandler = async (req, res) => {
   const { userId } = req.params
   const user = await authServices.getUser(userId)
   if (!user) {
-    throw new BadRequestError('user not found')
+    throw new NotFoundError('user not found')
   }
   const apiResponse = {
     success: true,
