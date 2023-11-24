@@ -5,5 +5,5 @@ export default interface IUserTokenResponse {
     email: string
   }
   token?: string
-  expiresIn?: string
+  expiresIn?: number
 }

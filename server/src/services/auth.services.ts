@@ -1,27 +1,38 @@
 import { cryptoServices } from './crypto.services'
 import { authDbServices } from './authDb.services'
-import { UnauthenticatedError } from '../errors'
-import jwt from 'jsonwebtoken'
+import {
+  BadRequestError,
+  ForbiddenError,
+  UnauthenticatedError,
+} from '../errors'
+
 import type User from '../models/user.models'
 import { type ICreateUser, type IJwt } from '../interfaces'
-import config from '../config'
+import { emailServices } from './email.services'
+import { tokenServices } from './token.services'
 
-const createUser = async (
-  user: ICreateUser,
-): Promise<{ newUser: User; jwt: IJwt }> => {
+const createUser = async (user: ICreateUser): Promise<{ newUser: User }> => {
   const { password } = user
   const hashedPassword = await cryptoServices.hashPassword(password)
   user.password = hashedPassword
+
+  const verificationToken = tokenServices.generateUuid()
+  user.verificationToken = verificationToken
+
   const newUser = await authDbServices.createUser(user)
-  const jwt = issueJwt(newUser)
-  return { newUser, jwt }
+  emailServices.sendVerificationEmail(newUser.email, verificationToken)
+  return { newUser }
 }
 
-const loginUser = async (email: string, password: string) => {
+const loginUser = async (
+  email: string,
+  password: string,
+): Promise<{ user: User; jwt: IJwt }> => {
   const user = await authDbServices.findUserByEmail(email)
   if (!user) {
     throw new UnauthenticatedError('Invalid Credentials')
   }
+
   const isPasswordCorrect = await cryptoServices.comparePassword(
     password,
     user.password,
@@ -30,7 +41,11 @@ const loginUser = async (email: string, password: string) => {
     throw new UnauthenticatedError('Invalid Credentials')
   }
 
-  const jwt = issueJwt(user)
+  if (!user.isVerified) {
+    throw new ForbiddenError('Email not verified')
+  }
+
+  const jwt = tokenServices.generateAccessToken(user)
   return { user, jwt }
 }
 
@@ -39,21 +54,61 @@ const getUser = async (userId: string) => {
   return user
 }
 
-const issueJwt = (user: User) => {
-  const id = user.id
-  const expiresIn = '1d'
-  const payload = {
-    sub: id,
-    iat: Date.now(),
+const verifyEmail = async (verificationToken: string) => {
+  const user =
+    await authDbServices.findUserByVerificationToken(verificationToken)
+  if (!user) {
+    throw new BadRequestError('Invalid token or user not found')
   }
-  const signedToken = jwt.sign(payload, config.jwt.secret, { expiresIn })
+  user.verificationToken = null
+  user.isVerified = true
 
-  return {
-    token: 'Bearer ' + signedToken,
-    expiresIn,
-  }
+  await user.save()
 }
 
-const authServices = { createUser, getUser, loginUser }
+const forgotPassword = async (email: string) => {
+  const user = await authDbServices.findUserByEmail(email)
+  if (!user) {
+    throw new BadRequestError('Invalid email')
+  }
+  const passwordResetToken = tokenServices.generatePasswordResetToken(user)
+  user.passwordResetToken = passwordResetToken
+  await user.save()
 
-export { authServices }
+  emailServices.sendForgotPasswordEmail(user.email, passwordResetToken)
+
+  return passwordResetToken
+}
+
+const resetPassword = async (
+  passwordResetToken: string,
+  newPassword: string,
+) => {
+  const { userId } =
+    await tokenServices.verifyPasswordResetToken(passwordResetToken)
+  const user = await authDbServices.findUserById(userId)
+  if (!user) {
+    throw new BadRequestError('user not found from auth service')
+  }
+  // check if the user has a password reset token, check and delete
+  if (
+    !user.passwordResetToken ||
+    !(user.passwordResetToken === passwordResetToken)
+  ) {
+    throw new ForbiddenError('Password reset token has already been used')
+  }
+  user.passwordResetToken = null
+  user.password = await cryptoServices.hashPassword(newPassword)
+  await user.save()
+
+  emailServices.sendResetPasswordSuccessfulEmail(user.email)
+}
+
+export const authServices = {
+  createUser,
+  getUser,
+  loginUser,
+  verifyEmail,
+  forgotPassword,
+  resetPassword,
+}

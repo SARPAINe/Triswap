@@ -8,6 +8,9 @@ class User extends Model {
   public role!: string
   public email!: string
   public password!: string
+  public isVerified!: boolean
+  public verificationToken!: string | null
+  public passwordResetToken!: string | null
 }
 
 User.init(
@@ -38,6 +41,19 @@ User.init(
     password: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+
+    isVerified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false,
+    },
+
+    verificationToken: {
+      type: DataTypes.STRING,
+    },
+    passwordResetToken: {
+      type: DataTypes.STRING,
     },
   },
   { tableName: 'users', sequelize },

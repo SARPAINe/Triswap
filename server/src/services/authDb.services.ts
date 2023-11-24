@@ -11,6 +11,16 @@ const findUserById = async (userId: string) => {
   return user
 }
 
+const findUserByVerificationToken = async (verificationToken: string) => {
+  const user = await User.findOne({ where: { verificationToken } })
+  return user
+}
+
+const findUserByPasswordResetToken = async (passwordResetToken: string) => {
+  const user = await User.findOne({ where: { passwordResetToken } })
+  return user
+}
+
 const createUser = async (user: ICreateUser) => {
   const newUser = await User.create({
     ...user,
@@ -18,10 +28,10 @@ const createUser = async (user: ICreateUser) => {
   return newUser
 }
 
-const authDbServices = {
+export const authDbServices = {
   createUser,
   findUserByEmail,
   findUserById,
+  findUserByVerificationToken,
+  findUserByPasswordResetToken,
 }
-
-export { authDbServices }

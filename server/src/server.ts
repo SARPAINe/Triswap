@@ -44,8 +44,8 @@ const closeServer = async (server: any): Promise<void> => {
 
 const main = async () => {
   try {
-    await setupDB()
     await startServer()
+    await setupDB() // this needs dot env
   } catch (err) {
     logger.error(err)
     await closeDB()

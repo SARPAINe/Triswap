@@ -3,6 +3,8 @@ import compression from 'compression'
 import passport from 'passport'
 import config from './config'
 import 'express-async-errors'
+import dotEnv from 'dotenv'
+dotEnv.config()
 
 // security
 import helmet from 'helmet'

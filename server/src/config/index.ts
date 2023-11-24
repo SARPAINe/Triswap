@@ -1,4 +1,3 @@
-import dotenv from 'dotenv'
 import fs from 'fs'
 import path from 'path'
 import morgan from 'morgan'
@@ -6,7 +5,9 @@ import { setupDB } from './sequelize.config'
 import { setupTestDBMemory } from './sequelize-test.config'
 import { type Sequelize } from 'sequelize'
 
+import dotenv from 'dotenv'
 const envFound = dotenv.config()
+
 if (envFound.error) {
   throw new Error('No .env file found')
 }
@@ -33,8 +34,21 @@ if (nodeEnv === 'test') {
   sequelize = setupDB()
 }
 
+const database = process.env.DB_DATABASE!
+const user = process.env.DB_USER!
+const password = process.env.DB_PASSWORD!
+const host = process.env.DB_HOST!
+// console.log({
+//   database,
+//   user,
+//   password,
+//   host,
+// })
 export default {
   port: process.env.PORT!,
+  app: {
+    baseURL: `http://localhost:3000/api/v1`,
+  },
   logs: {
     morgan: configuredMorgan,
   },
@@ -46,8 +60,19 @@ export default {
   },
   db: {
     sequelize,
+    prodDb: {
+      database,
+      user,
+      password,
+      host,
+    },
   },
   jwt: {
     secret: process.env.JWT_SECRET!,
+    accessTokenExpiresIn: 60 * 60 * 24, // '1d'
+    passwordResetTokenExpiresIn: 60 * 5, // 5 minutes
+  },
+  email: {
+    adminEmailAddress: 'admin@bjitcs.com',
   },
 }

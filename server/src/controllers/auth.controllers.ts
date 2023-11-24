@@ -6,15 +6,15 @@ import type User from '../models/user.models'
 import { type IJwt, type IUserTokenResponse } from '../interfaces'
 
 const registerUser: RequestHandler = async (req, res) => {
-  const { username, email, password, role } = req.body
+  const { username, email, password } = req.body
 
-  const userObj = { username, email, password, role }
-  const { newUser, jwt } = await authServices.createUser(userObj)
+  const userObj = { username, email, password }
+  const { newUser } = await authServices.createUser(userObj)
 
   const apiResponse = {
     success: true,
-    message: 'user has been successfully registered',
-    data: buildUserResponse(newUser, jwt),
+    message: 'User has been successfully registered. Please verify your email.',
+    data: buildUserResponse(newUser),
   }
   res.status(StatusCodes.CREATED).json(apiResponse)
 }
@@ -58,6 +58,48 @@ const getUser: RequestHandler = async (req, res) => {
   res.status(StatusCodes.OK).json(apiResponse)
 }
 
+const verifyUserEmail: RequestHandler = async (req, res) => {
+  const verificationToken = req.query.token as string
+  if (!verificationToken) {
+    throw new BadRequestError('Token not provided')
+  }
+  await authServices.verifyEmail(verificationToken)
+  const apiResponse = {
+    success: true,
+    message: 'Email verified Successfully',
+    verificationToken,
+  }
+  res.status(StatusCodes.OK).json(apiResponse)
+}
+
+const forgotUserPassword: RequestHandler = async (req, res) => {
+  const { email } = req.body
+  if (!email) {
+    throw new BadRequestError('Please provide email')
+  }
+  const passwordResetToken = await authServices.forgotPassword(email)
+
+  const apiResponse = {
+    success: true,
+    message: 'Password rest token has been sent to email',
+    passwordResetToken,
+  }
+  res.status(StatusCodes.OK).json(apiResponse)
+}
+
+const resetUserPassword: RequestHandler = async (req, res) => {
+  const passwordResetToken = req.query.token as string
+  const { newPassword } = req.body
+
+  await authServices.resetPassword(passwordResetToken, newPassword as string)
+
+  const apiResponse = {
+    success: true,
+    message: 'Password reset successful. Please log in with new password',
+  }
+  res.status(StatusCodes.OK).json(apiResponse)
+}
+
 const buildUserResponse = (user: User, token?: IJwt): IUserTokenResponse => {
   const userResponse = {
     user: {
@@ -77,4 +119,12 @@ const buildUserResponse = (user: User, token?: IJwt): IUserTokenResponse => {
   return userResponse
 }
 
-export { registerUser, loginUser, logoutUser, getUser }
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  getUser,
+  verifyUserEmail,
+  forgotUserPassword,
+  resetUserPassword,
+}
