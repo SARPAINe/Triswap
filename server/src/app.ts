@@ -1,16 +1,14 @@
 import express from 'express'
 import compression from 'compression'
 import passport from 'passport'
-import config from './config'
 import 'express-async-errors'
-import dotEnv from 'dotenv'
-dotEnv.config()
 
 // security
 import helmet from 'helmet'
 import cors from 'cors'
 
 // logger
+import config from './config'
 const morgan = config.logs.morgan
 
 // routes
@@ -43,4 +41,5 @@ app.use('/api/v1/tokens', tokenRoutes)
 
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)
+
 export default app

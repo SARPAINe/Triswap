@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import app from './app'
-import config from './config'
 import logger from './logger'
+import sequelize from './config/sequelize.config'
+import config from './config'
 
-const sequelize = config.db.sequelize
-
-const setupDB = async () => {
+const startDB = async (force: boolean) => {
   try {
     await sequelize.authenticate()
-    await sequelize.sync({ force: true })
+    await sequelize.sync({ force })
     logger.info('Connection to the database has been established successfully.')
   } catch (err) {
     logger.error(err)
@@ -45,7 +44,7 @@ const closeServer = async (server: any): Promise<void> => {
 const main = async () => {
   try {
     await startServer()
-    await setupDB() // this needs dot env
+    await startDB(true) // this needs dot env
   } catch (err) {
     logger.error(err)
     await closeDB()
@@ -57,4 +56,4 @@ if (require.main === module) {
   main()
 }
 
-export { setupDB, closeDB, startServer, closeServer }
+export { startDB, closeDB, startServer, closeServer }

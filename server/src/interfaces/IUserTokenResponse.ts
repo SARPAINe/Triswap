@@ -1,9 +1,9 @@
 export default interface IUserTokenResponse {
   user: {
-    id: number
+    id: string
     username: string
     email: string
   }
-  token?: string
+  access_token?: string
   expiresIn?: number
 }

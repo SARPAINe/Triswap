@@ -3,19 +3,21 @@ import { StatusCodes } from 'http-status-codes'
 import { authServices } from '../services/auth.services'
 import { BadRequestError, NotFoundError } from '../errors'
 import type User from '../models/user.models'
-import { type IJwt, type IUserTokenResponse } from '../interfaces'
+import { IJwt, IUserTokenResponse } from '../interfaces'
 
 const registerUser: RequestHandler = async (req, res) => {
   const { username, email, password } = req.body
 
   const userObj = { username, email, password }
-  const { newUser } = await authServices.createUser(userObj)
+  const { newUser, verificationToken } = await authServices.createUser(userObj)
 
   const apiResponse = {
     success: true,
     message: 'User has been successfully registered. Please verify your email.',
     data: buildUserResponse(newUser),
+    verificationToken,
   }
+
   res.status(StatusCodes.CREATED).json(apiResponse)
 }
 
@@ -66,8 +68,7 @@ const verifyUserEmail: RequestHandler = async (req, res) => {
   await authServices.verifyEmail(verificationToken)
   const apiResponse = {
     success: true,
-    message: 'Email verified Successfully',
-    verificationToken,
+    message: 'Email verified successfully',
   }
   res.status(StatusCodes.OK).json(apiResponse)
 }
@@ -111,7 +112,7 @@ const buildUserResponse = (user: User, token?: IJwt): IUserTokenResponse => {
   if (token) {
     return {
       ...userResponse,
-      token: token.token,
+      access_token: token.token,
       expiresIn: token.expiresIn,
     }
   }

@@ -1,9 +1,9 @@
 import { Sequelize, type Options } from 'sequelize'
 
-const host = '127.0.0.1'
-const user = 'root'
-const password = 'root'
-const database = 'BJIT_CRYPTO_SWAP_TEST'
+const database = process.env.DB_DATABASE!
+const user = process.env.DB_USER!
+const password = process.env.DB_PASSWORD!
+const host = process.env.DB_HOST!
 
 export const setupTestDB = () => {
   const sequelizeOptions: Options = {
@@ -12,7 +12,6 @@ export const setupTestDB = () => {
     logging: false,
   }
   const sequelize = new Sequelize(database, user, password, sequelizeOptions)
-  // await sequelize.sync({ force: true })
   return sequelize
 }
 

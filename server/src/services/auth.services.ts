@@ -11,7 +11,9 @@ import { type ICreateUser, type IJwt } from '../interfaces'
 import { emailServices } from './email.services'
 import { tokenServices } from './token.services'
 
-const createUser = async (user: ICreateUser): Promise<{ newUser: User }> => {
+const createUser = async (
+  user: ICreateUser,
+): Promise<{ newUser: User; verificationToken: string }> => {
   const { password } = user
   const hashedPassword = await cryptoServices.hashPassword(password)
   user.password = hashedPassword
@@ -20,8 +22,8 @@ const createUser = async (user: ICreateUser): Promise<{ newUser: User }> => {
   user.verificationToken = verificationToken
 
   const newUser = await authDbServices.createUser(user)
-  emailServices.sendVerificationEmail(newUser.email, verificationToken)
-  return { newUser }
+  await emailServices.sendVerificationEmail(newUser.email, verificationToken)
+  return { newUser, verificationToken }
 }
 
 const loginUser = async (
@@ -75,7 +77,7 @@ const forgotPassword = async (email: string) => {
   user.passwordResetToken = passwordResetToken
   await user.save()
 
-  emailServices.sendForgotPasswordEmail(user.email, passwordResetToken)
+  await emailServices.sendForgotPasswordEmail(user.email, passwordResetToken)
 
   return passwordResetToken
 }
@@ -101,7 +103,7 @@ const resetPassword = async (
   user.password = await cryptoServices.hashPassword(newPassword)
   await user.save()
 
-  emailServices.sendResetPasswordSuccessfulEmail(user.email)
+  await emailServices.sendResetPasswordSuccessfulEmail(user.email)
 }
 
 export const authServices = {

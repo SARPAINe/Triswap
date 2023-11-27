@@ -3,21 +3,29 @@
   "version": "1.0.0",
   "description": "BJIT Swap backend services",
   "main": "./src/server.ts",
+  "author": "Ragib Shahariar Ayon",
+  "license": "ISC",
   "scripts": {
-    "start": "cross-env NODE_ENV=development nodemon",
-    "start:prod": "cross-env NODE_ENV=production node ./build/server.js",
     "build": "npx tsc",
     "build:watch": "npx tsc --watch",
-    "test": "cross-env NODE_ENV=test jest",
+    "start": "cross-env NODE_ENV=production node ./build/server.js",
+    "start:dev": "cross-env NODE_ENV=development nodemon",
+    "start:test": "cross-env NODE_ENV=test nodemon",
+    "test": "cross-env NODE_ENV=test npx jest",
+    "test:staged": "cross-env NODE_ENV=test npx jest --passWithNoTests",
     "test:watch": "cross-env NODE_ENV=test jest --watchAll",
     "lint": "eslint --ignore-path .eslintignore \"**/*.+(js|ts|json)\"",
     "lint:fix": "eslint --fix --ignore-path .eslintignore \"**/*.+(js|ts|json)\"",
     "format": "prettier --ignore-path .prettierignore --write \"**/*.+(js|ts|json)\"",
     "prepare": "cd .. && husky install server/.husky",
+    "pre-commit": "npx lint-staged",
     "commit": "commit"
   },
-  "author": "Ragib Shahariar Ayon",
-  "license": "ISC",
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run pre-commit"
+    }
+  },
   "devDependencies": {
     "@commitlint/cli": "^18.4.0",
     "@commitlint/config-conventional": "^18.4.0",

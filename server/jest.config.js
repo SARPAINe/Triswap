@@ -3,10 +3,10 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  // setupFiles: ['./src/config/sequelize-test-db.config.ts'],
   testMatch: ["**/**/*.test.ts"],
+  // testMatch: ["<rootDir>/src/test/**/*.test.ts"],
   verbose:true,
   forceExit:true,
   detectOpenHandles: true,
-  // clearMocks:true
-};
+
+  };

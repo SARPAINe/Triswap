@@ -1,9 +1,9 @@
-import { DataTypes, Model } from 'sequelize'
+import { DataTypes, Model, UUIDV4 } from 'sequelize'
 import config from '../config'
 const sequelize = config.db.sequelize
 
 class User extends Model {
-  public id!: number
+  public id!: string
   public username!: string
   public role!: string
   public email!: string
@@ -16,8 +16,8 @@ class User extends Model {
 User.init(
   {
     id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
+      type: DataTypes.UUID,
+      defaultValue: UUIDV4,
       primaryKey: true,
     },
 
