@@ -3,11 +3,13 @@ import app from './app'
 import logger from './logger'
 import sequelize from './config/sequelize.config'
 import config from './config'
+import defineAssociations from './models/models.associations'
 
 const startDB = async (force: boolean) => {
   try {
     await sequelize.authenticate()
     await sequelize.sync({ force })
+    defineAssociations()
     logger.info('Connection to the database has been established successfully.')
   } catch (err) {
     logger.error(err)
@@ -44,7 +46,7 @@ const closeServer = async (server: any): Promise<void> => {
 const main = async () => {
   try {
     await startServer()
-    await startDB(true) // this needs dot env
+    await startDB(false) // this needs dot env
   } catch (err) {
     logger.error(err)
     await closeDB()

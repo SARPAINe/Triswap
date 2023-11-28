@@ -1,4 +1,4 @@
-import { DataTypes, Model, UUIDV4 } from 'sequelize'
+import { DataTypes, Model } from 'sequelize'
 import config from '../config'
 const sequelize = config.db.sequelize
 
@@ -7,17 +7,13 @@ class User extends Model {
   public username!: string
   public role!: string
   public email!: string
-  public password!: string
-  public isVerified!: boolean
-  public verificationToken!: string | null
-  public passwordResetToken!: string | null
 }
 
 User.init(
   {
     id: {
       type: DataTypes.UUID,
-      defaultValue: UUIDV4,
+      defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
 
@@ -36,24 +32,6 @@ User.init(
       type: DataTypes.ENUM('ADMIN', 'USER'),
       allowNull: false,
       defaultValue: 'USER',
-    },
-
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-
-    isVerified: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-      allowNull: false,
-    },
-
-    verificationToken: {
-      type: DataTypes.STRING,
-    },
-    passwordResetToken: {
-      type: DataTypes.STRING,
     },
   },
   { tableName: 'users', sequelize },

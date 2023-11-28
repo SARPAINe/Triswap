@@ -13,6 +13,7 @@ const morgan = config.logs.morgan
 
 // routes
 import authRoutes from './routes/v1/auth.routes'
+import userRoutes from './routes/v1/user.routes'
 import tokenRoutes from './routes/v1/token.routes'
 import ethRoutes from './routes/v1/eth.routes'
 
@@ -36,6 +37,7 @@ app.use(passport.initialize())
 
 // routes
 app.use('/api/v1/auth', authRoutes)
+app.use('/api/v1/user', userRoutes)
 app.use('/api/v1/eth', ethRoutes)
 app.use('/api/v1/tokens', tokenRoutes)
 

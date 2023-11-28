@@ -15,7 +15,7 @@ const generateAccessToken = (user: User) => {
     expiresIn,
   })
   return {
-    token: signedToken,
+    access_token: signedToken,
     expiresIn: expiresIn,
   }
 }

@@ -1,5 +1,7 @@
 import { cryptoServices } from './crypto.services'
-import { authDbServices } from './authDb.services'
+import { userdbServices } from './db/userdb.services'
+import { authdbServices } from './db/authdb.services'
+
 import {
   BadRequestError,
   ForbiddenError,
@@ -7,43 +9,72 @@ import {
 } from '../errors'
 
 import type User from '../models/user.models'
-import { type ICreateUser, type IJwt } from '../interfaces'
 import { emailServices } from './email.services'
 import { tokenServices } from './token.services'
+import {
+  AuthRegisterUserDTO,
+  LoginUserDTO,
+  RegisterUserDTO,
+  UserRegisterUserDTO,
+} from '../dto'
+
+import { IAccessToken, IUser } from '../interfaces'
 
 const createUser = async (
-  user: ICreateUser,
-): Promise<{ newUser: User; verificationToken: string }> => {
-  const { password } = user
+  userObj: RegisterUserDTO,
+): Promise<{
+  user: IUser
+  verificationToken: string
+}> => {
+  const { email, username, password } = userObj
+  const userData: UserRegisterUserDTO = { email, username }
+
   const hashedPassword = await cryptoServices.hashPassword(password)
-  user.password = hashedPassword
-
   const verificationToken = tokenServices.generateUuid()
-  user.verificationToken = verificationToken
 
-  const newUser = await authDbServices.createUser(user)
-  await emailServices.sendVerificationEmail(newUser.email, verificationToken)
-  return { newUser, verificationToken }
+  const newUser = await userdbServices.createUser(userData)
+  const authObj: AuthRegisterUserDTO = {
+    userId: newUser.id,
+    password: hashedPassword,
+    verificationToken,
+  }
+
+  await authdbServices.createAuth(authObj)
+  emailServices.sendVerificationEmail(newUser.email, verificationToken)
+
+  const user = {
+    id: newUser.id,
+    username: newUser.username,
+    email: newUser.email,
+  }
+
+  return { user, verificationToken }
 }
 
 const loginUser = async (
-  email: string,
-  password: string,
-): Promise<{ user: User; jwt: IJwt }> => {
-  const user = await authDbServices.findUserByEmail(email)
+  loginObj: LoginUserDTO,
+): Promise<{ user: User; jwt: IAccessToken }> => {
+  const { email, password } = loginObj
+  const user = await userdbServices.findUserByEmail(email)
   if (!user) {
     throw new UnauthenticatedError('Invalid Credentials')
+  }
+  const authData = await authdbServices.findAuthByUserId(user.id)
+  if (!authData) {
+    throw new BadRequestError(
+      'something terrible happened. user data exists but no auth data',
+    )
   }
 
   const isPasswordCorrect = await cryptoServices.comparePassword(
     password,
-    user.password,
+    authData.password,
   )
   if (!isPasswordCorrect) {
     throw new UnauthenticatedError('Invalid Credentials')
   }
 
-  if (!user.isVerified) {
+  if (!authData.isVerified) {
     throw new ForbiddenError('Email not verified')
   }
 
@@ -51,34 +82,35 @@ const loginUser = async (
   return { user, jwt }
 }
 
-const getUser = async (userId: string) => {
-  const user = await authDbServices.findUserById(userId)
-  return user
-}
-
 const verifyEmail = async (verificationToken: string) => {
-  const user =
-    await authDbServices.findUserByVerificationToken(verificationToken)
-  if (!user) {
+  const authData =
+    await authdbServices.findAuthByVerificationToken(verificationToken)
+  if (!authData) {
     throw new BadRequestError('Invalid token or user not found')
   }
-  user.verificationToken = null
-  user.isVerified = true
+  authData.verificationToken = null
+  authData.isVerified = true
 
-  await user.save()
+  await authData.save()
 }
 
 const forgotPassword = async (email: string) => {
-  const user = await authDbServices.findUserByEmail(email)
+  const user = await userdbServices.findUserByEmail(email)
   if (!user) {
     throw new BadRequestError('Invalid email')
   }
+
+  const authData = await authdbServices.findAuthByUserId(user.id)
+
+  if (!authData) {
+    throw new BadRequestError(
+      'something terrible happened. user data exists but no auth data',
+    )
+  }
   const passwordResetToken = tokenServices.generatePasswordResetToken(user)
-  user.passwordResetToken = passwordResetToken
-  await user.save()
-
-  await emailServices.sendForgotPasswordEmail(user.email, passwordResetToken)
-
+  authData.passwordResetToken = passwordResetToken
+  await authData.save()
+  emailServices.sendForgotPasswordEmail(user.email, passwordResetToken)
   return passwordResetToken
 }
 
@@ -88,27 +120,33 @@ const resetPassword = async (
 ) => {
   const { userId } =
     await tokenServices.verifyPasswordResetToken(passwordResetToken)
-  const user = await authDbServices.findUserById(userId)
+
+  const user = await userdbServices.findUserById(userId)
+
   if (!user) {
     throw new BadRequestError('user not found from auth service')
   }
-  // check if the user has a password reset token, check and delete
+  // get auth data check if the user has a password reset token, check and delete
+  const authData = await authdbServices.findAuthByUserId(user.id)
+
+  if (!authData) {
+    throw new BadRequestError('Auth data does not exist')
+  }
+
   if (
-    !user.passwordResetToken ||
-    !(user.passwordResetToken === passwordResetToken)
+    !authData.passwordResetToken ||
+    !(authData.passwordResetToken === passwordResetToken)
   ) {
     throw new ForbiddenError('Password reset token has already been used')
   }
-  user.passwordResetToken = null
-  user.password = await cryptoServices.hashPassword(newPassword)
-  await user.save()
-
-  await emailServices.sendResetPasswordSuccessfulEmail(user.email)
+  authData.passwordResetToken = null
+  authData.password = await cryptoServices.hashPassword(newPassword)
+  await authData.save()
+  emailServices.sendResetPasswordSuccessfulEmail(user.email)
 }
 
 export const authServices = {
   createUser,
-  getUser,
   loginUser,
   verifyEmail,
   forgotPassword,

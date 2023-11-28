@@ -1,6 +1,6 @@
 import passport from 'passport'
 import passportJwt from 'passport-jwt'
-import { authDbServices } from '../services/authDb.services'
+import { userdbServices } from '../services/db/userdb.services'
 import config from '.'
 
 const JwtStrategy = passportJwt.Strategy
@@ -14,10 +14,10 @@ const jwtOptions = {
 const strategy = new JwtStrategy(jwtOptions, async (jwt_payload, done) => {
   try {
     const id = jwt_payload.sub
-    const user = await authDbServices.findUserById(id)
+    const user = await userdbServices.findUserById(id)
 
     if (!user) {
-      return done(null, false, { message: 'Incorrect email or password.' })
+      return done(null, false, { message: 'Incorrect email' })
     } else {
       return done(null, user) // attach user to request object
     }
