@@ -1,6 +1,6 @@
 import { type ErrorRequestHandler } from 'express'
 import { StatusCodes } from 'http-status-codes'
-import logger from '../logger'
+import { logger } from '../config/winston.config'
 
 const errorHandlerMiddleware: ErrorRequestHandler = (err, req, res, _next) => {
   logger.error(err.message)

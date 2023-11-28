@@ -2,8 +2,6 @@ import { RequestHandler } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { authServices } from '../services/auth.services'
 import { BadRequestError } from '../errors'
-// import type User from '../models/user.models'
-// import { IJwt, IUserTokenResponse } from '../interfaces'
 import { LoginUserDTO, RegisterUserDTO } from '../dto'
 
 const registerUser: RequestHandler = async (req, res) => {
@@ -26,12 +24,12 @@ const loginUser: RequestHandler = async (req, res) => {
     throw new BadRequestError('Please provide email or password')
   }
   const loginObj: LoginUserDTO = { email, password }
-  const { user, jwt } = await authServices.loginUser(loginObj)
+  const { user, tokens } = await authServices.loginUser(loginObj)
 
   const apiResponse = {
     success: true,
     message: 'user has been successfully registered',
-    data: { user, ...jwt },
+    data: { user, tokens },
   }
   res.status(StatusCodes.OK).json(apiResponse)
 }
@@ -41,7 +39,9 @@ const verifyUserEmail: RequestHandler = async (req, res) => {
   if (!verificationToken) {
     throw new BadRequestError('Token not provided')
   }
+
   await authServices.verifyEmail(verificationToken)
+
   const apiResponse = {
     success: true,
     message: 'Email verified successfully',
@@ -78,10 +78,26 @@ const resetUserPassword: RequestHandler = async (req, res) => {
   res.status(StatusCodes.OK).json(apiResponse)
 }
 
+const changeUserPassword: RequestHandler = async (req, res) => {
+  const apiResponse = {
+    success: true,
+    message: 'Password changed, please login with new password.',
+  }
+  res.status(StatusCodes.OK).json(apiResponse)
+}
+
+const refresh: RequestHandler = async () => {
+  // check if the token is blacklisted
+  // verify refresh token
+  // generate access token
+}
+
 export {
   registerUser,
   loginUser,
   verifyUserEmail,
   forgotUserPassword,
   resetUserPassword,
+  changeUserPassword,
+  refresh,
 }

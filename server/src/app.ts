@@ -8,7 +8,7 @@ import helmet from 'helmet'
 import cors from 'cors'
 
 // logger
-import config from './config'
+import { config } from './config'
 const morgan = config.logs.morgan
 
 // routes

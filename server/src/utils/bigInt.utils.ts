@@ -1,4 +1,4 @@
-const toObject = (obj: object): JSON => {
+export const toObject = (obj: object): JSON => {
   return JSON.parse(
     JSON.stringify(
       obj,
@@ -6,5 +6,3 @@ const toObject = (obj: object): JSON => {
     ),
   )
 }
-
-export { toObject }

@@ -1,3 +1,1 @@
-class CustomAPIError extends Error {}
-
-export default CustomAPIError
+export class CustomAPIError extends Error {}

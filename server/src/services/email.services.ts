@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer'
-import { createTransporter } from '../config/nodemailer.config'
+import { config } from '../config'
 import { type SendMailOptions } from 'nodemailer'
-import config from '../config'
+import { createTransporter } from '../config/nodemailer.config'
 
 const adminEmailAddress = config.email.adminEmailAddress
 

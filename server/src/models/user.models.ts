@@ -1,5 +1,5 @@
 import { DataTypes, Model } from 'sequelize'
-import config from '../config'
+import { config } from '../config'
 const sequelize = config.db.sequelize
 
 class User extends Model {

@@ -1,13 +1,12 @@
 import { cryptoServices } from './crypto.services'
 import { userdbServices } from './db/userdb.services'
 import { authdbServices } from './db/authdb.services'
-
 import {
   BadRequestError,
   ForbiddenError,
   UnauthenticatedError,
+  CustomAPIError,
 } from '../errors'
-
 import type User from '../models/user.models'
 import { emailServices } from './email.services'
 import { tokenServices } from './token.services'
@@ -18,7 +17,7 @@ import {
   UserRegisterUserDTO,
 } from '../dto'
 
-import { IAccessToken, IUser } from '../interfaces'
+import { ITokens, IUser } from '../interfaces'
 
 const createUser = async (
   userObj: RegisterUserDTO,
@@ -53,19 +52,21 @@ const createUser = async (
 
 const loginUser = async (
   loginObj: LoginUserDTO,
-): Promise<{ user: User; jwt: IAccessToken }> => {
+): Promise<{ user: User; tokens: ITokens }> => {
   const { email, password } = loginObj
+  // check if user exists
   const user = await userdbServices.findUserByEmail(email)
   if (!user) {
     throw new UnauthenticatedError('Invalid Credentials')
   }
+  // check if password matches
   const authData = await authdbServices.findAuthByUserId(user.id)
   if (!authData) {
-    throw new BadRequestError(
+    throw new CustomAPIError(
       'something terrible happened. user data exists but no auth data',
     )
   }
-
+  //
   const isPasswordCorrect = await cryptoServices.comparePassword(
     password,
     authData.password,
@@ -74,19 +75,24 @@ const loginUser = async (
     throw new UnauthenticatedError('Invalid Credentials')
   }
 
+  // check if email is verified
   if (!authData.isVerified) {
     throw new ForbiddenError('Email not verified')
   }
 
-  const jwt = tokenServices.generateAccessToken(user)
-  return { user, jwt }
+  // return access_token and refresh_token
+  const tokens = tokenServices.generateTokens(user)
+  authData.refreshToken = tokens.refresh.refresh_token
+  await authData.save()
+
+  return { user, tokens }
 }
 
 const verifyEmail = async (verificationToken: string) => {
   const authData =
     await authdbServices.findAuthByVerificationToken(verificationToken)
   if (!authData) {
-    throw new BadRequestError('Invalid token or user not found')
+    throw new BadRequestError('Invalid token. auth data not found')
   }
   authData.verificationToken = null
   authData.isVerified = true
@@ -103,7 +109,7 @@ const forgotPassword = async (email: string) => {
   const authData = await authdbServices.findAuthByUserId(user.id)
 
   if (!authData) {
-    throw new BadRequestError(
+    throw new CustomAPIError(
       'something terrible happened. user data exists but no auth data',
     )
   }
@@ -130,7 +136,7 @@ const resetPassword = async (
   const authData = await authdbServices.findAuthByUserId(user.id)
 
   if (!authData) {
-    throw new BadRequestError('Auth data does not exist')
+    throw new CustomAPIError('Auth data does not exist')
   }
 
   if (

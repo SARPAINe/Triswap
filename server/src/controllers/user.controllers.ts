@@ -3,20 +3,14 @@ import { StatusCodes } from 'http-status-codes'
 import { userServices } from '../services/user.services'
 import { NotFoundError } from '../errors'
 import type User from '../models/user.models'
-
-interface IApiResponse<T> {
-  success: boolean
-  message: string
-  count?: number
-  data?: T
-}
+import { IApiResponse, IUser } from '../interfaces'
 
 const getAllUsers: RequestHandler = async (req, res) => {
   const users = await userServices.getAllUsers()
 
   const apiResponse: IApiResponse<User[]> = {
     success: true,
-    message: 'All user data retrieved successfully ',
+    message: 'All user data retrieved',
     count: users.length,
     data: users,
   }
@@ -32,9 +26,9 @@ const getUser: RequestHandler = async (req, res) => {
     throw new NotFoundError('User not found')
   }
 
-  const apiResponse = {
+  const apiResponse: IApiResponse<User> = {
     success: true,
-    message: 'User data retrieved successfully',
+    message: 'User data retrieved',
     data: user,
   }
   res.status(StatusCodes.OK).json(apiResponse)
@@ -42,12 +36,22 @@ const getUser: RequestHandler = async (req, res) => {
 
 const getMe: RequestHandler = async (req, res) => {
   const user = await userServices.getMe(req.user as User)
-  const apiResponse = {
+  const apiResponse: IApiResponse<IUser> = {
     success: true,
-    message: 'User data retrieved successfully',
+    message: 'User data retrieved',
     data: user,
   }
   res.status(StatusCodes.OK).json(apiResponse)
 }
 
-export { getAllUsers, getUser, getMe }
+const updateMe: RequestHandler = async (req, res) => {
+  const apiResponse: IApiResponse<IUser> = {
+    success: true,
+    message: 'User data updated',
+    // data: user,
+  }
+  res.status(StatusCodes.OK).json(apiResponse)
+}
+
+// const deleteUser
+export { getAllUsers, getUser, getMe, updateMe }

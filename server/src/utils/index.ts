@@ -1,4 +1,2 @@
-import { toObject } from './bigInt.utils'
-import { connectBC } from './evm.utils'
-
-export { toObject, connectBC }
+export * from './bigInt.utils'
+export * from './evm.utils'

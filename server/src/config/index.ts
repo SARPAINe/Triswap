@@ -4,7 +4,7 @@ dotEnv.config({ path: path.join(__dirname, './../../.env') })
 import morgan from './morgan.config'
 import sequelize from './sequelize.config'
 
-const config = {
+export const config = {
   port: process.env.PORT!,
   app: {
     baseURL: `http://localhost:3000/api/v1`,
@@ -23,11 +23,17 @@ const config = {
   },
   jwt: {
     secret: process.env.JWT_SECRET!,
-    accessTokenExpiresIn: 60 * 60 * 24, // '1d'
-    passwordResetTokenExpiresIn: 60 * 5, // 5 minutes
+    access_token: {
+      secret: process.env.ACCESS_TOKEN_JWT_SECRET!,
+      expiresIn: 60 * 10,
+    }, // '10m'
+    refresh_token: {
+      secret: process.env.REFRESH_TOKEN_JWT_SECRET!,
+      expiresIn: 60 * 60 * 24 * 7, // '7d'
+    },
+    passwordResetTokenExpiresIn: 60 * 10, // 5 minutes
   },
   email: {
     adminEmailAddress: 'admin@bjitcs.com',
   },
 }
-export default config

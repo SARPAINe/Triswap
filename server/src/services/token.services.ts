@@ -1,22 +1,54 @@
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import { v4 as uuidV4 } from 'uuid'
-import config from '../config'
+import { config } from '../config'
 import User from '../models/user.models'
 import { BadRequestError } from '../errors'
+import { ITokens } from '../interfaces'
 
-// for access token
+const generateTokens = (user: User): ITokens => {
+  const accessToken = generateAccessToken(user)
+  const refreshToken = generateRefreshToken(user)
+  const tokens: ITokens = {
+    access: {
+      ...accessToken,
+    },
+    refresh: {
+      ...refreshToken,
+    },
+  }
+  return tokens
+}
+
+const generateRefreshToken = (user: User) => {
+  const payload = {
+    sub: user.id,
+    iat: Date.now(),
+  }
+  const expiresIn = config.jwt.refresh_token.expiresIn
+  console.log(expiresIn)
+  const signedToken = jwt.sign(payload, config.jwt.refresh_token.secret, {
+    expiresIn,
+  })
+
+  return {
+    refresh_token: signedToken,
+    expires: new Date(Date.now() + expiresIn * 1000).toISOString(),
+  }
+}
+
 const generateAccessToken = (user: User) => {
   const payload = {
     sub: user.id,
     iat: Date.now(),
   }
-  const expiresIn = config.jwt.accessTokenExpiresIn
-  const signedToken = jwt.sign(payload, config.jwt.secret, {
+  const expiresIn = config.jwt.access_token.expiresIn
+  console.log(expiresIn)
+  const signedToken = jwt.sign(payload, config.jwt.access_token.secret, {
     expiresIn,
   })
   return {
     access_token: signedToken,
-    expiresIn: expiresIn,
+    expires: new Date(Date.now() + expiresIn * 1000).toISOString(),
   }
 }
 
@@ -48,7 +80,9 @@ const generateUuid = () => {
 }
 
 export const tokenServices = {
+  generateTokens,
   generateAccessToken,
+  generateRefreshToken,
   generatePasswordResetToken,
   verifyPasswordResetToken,
   generateUuid,

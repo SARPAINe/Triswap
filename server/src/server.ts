@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import app from './app'
-import logger from './logger'
+import { config } from './config'
 import sequelize from './config/sequelize.config'
-import config from './config'
+import { logger } from './config/winston.config'
 import defineAssociations from './models/models.associations'
 
 const startDB = async (force: boolean) => {
@@ -46,7 +46,7 @@ const closeServer = async (server: any): Promise<void> => {
 const main = async () => {
   try {
     await startServer()
-    await startDB(false) // this needs dot env
+    await startDB(true) // this needs dot env
   } catch (err) {
     logger.error(err)
     await closeDB()

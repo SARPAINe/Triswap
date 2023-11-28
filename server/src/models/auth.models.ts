@@ -1,5 +1,5 @@
 import { DataTypes, Model } from 'sequelize'
-import config from '../config'
+import { config } from '../config'
 const sequelize = config.db.sequelize
 
 class Auth extends Model {
@@ -9,6 +9,7 @@ class Auth extends Model {
   public isVerified!: boolean
   public verificationToken!: string | null
   public passwordResetToken!: string | null
+  public refreshToken!: string | null
 }
 
 Auth.init(
@@ -21,7 +22,7 @@ Auth.init(
 
     userId: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: false, // for mandatory associations
       unique: true,
     },
 
@@ -40,6 +41,10 @@ Auth.init(
       type: DataTypes.STRING,
     },
     passwordResetToken: {
+      type: DataTypes.STRING,
+    },
+
+    refreshToken: {
       type: DataTypes.STRING,
     },
   },

@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express'
-import { UnauthenticatedError, UnauthorizedError } from '../errors'
+import { ForbiddenError, UnauthenticatedError } from '../errors'
 import User from '../models/user.models'
 import passport from 'passport'
 
@@ -18,7 +18,7 @@ const isAdmin: RequestHandler = (req, res, next) => {
   if (role === 'ADMIN') {
     return next()
   }
-  throw new UnauthorizedError('Forbidden - Insufficient privileges')
+  throw new ForbiddenError('Forbidden - Insufficient privileges')
 }
 
 export { isAuthenticated, isAdmin, isAuthenticatedLocal }

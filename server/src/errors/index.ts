@@ -1,13 +1,6 @@
-import BadRequestError from './BadRequest.error'
-import NotFoundError from './NotFound.error'
-import UnauthorizedError from './Unauthorized.error'
-import UnauthenticatedError from './Unauthenticated.error'
-import ForbiddenError from './Forbidden.error'
-
-export {
-  BadRequestError,
-  NotFoundError,
-  UnauthorizedError,
-  UnauthenticatedError,
-  ForbiddenError,
-}
+export * from './BadRequest.error'
+export * from './NotFound.error'
+export * from './Unauthorized.error'
+export * from './Unauthenticated.error'
+export * from './Forbidden.error'
+export * from './CustomError.error'

@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes'
-import CustomAPIError from './CustomError.error'
+import { CustomAPIError } from './CustomError.error'
 
-class BadRequestError extends CustomAPIError {
+export class BadRequestError extends CustomAPIError {
   statusCode: number
   name: string
 
@@ -11,5 +11,3 @@ class BadRequestError extends CustomAPIError {
     this.name = 'BadRequestError'
   }
 }
-
-export default BadRequestError
