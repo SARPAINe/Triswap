@@ -2,13 +2,12 @@ import { RequestHandler } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { authServices } from '../services/auth.services'
 import { BadRequestError } from '../errors'
-import { LoginUserDTO, RegisterUserDTO } from '../dto'
+import { ChangePasswordDTO, LoginUserDTO, RegisterUserDTO } from '../dto'
+import { IUser } from '../interfaces'
 
 const registerUser: RequestHandler = async (req, res) => {
-  const { username, email, password } = req.body
-  const userObj: RegisterUserDTO = { username, email, password }
-  const { user, verificationToken } = await authServices.createUser(userObj)
-
+  const userObj = req.body as RegisterUserDTO
+  const { user, verificationToken } = await authServices.registerUser(userObj)
   const apiResponse = {
     success: true,
     message: 'User has been successfully registered. Please verify your email.',
@@ -18,14 +17,9 @@ const registerUser: RequestHandler = async (req, res) => {
 }
 
 const loginUser: RequestHandler = async (req, res) => {
-  const { email, password } = req.body
-
-  if (!email || !password) {
-    throw new BadRequestError('Please provide email or password')
-  }
-  const loginObj: LoginUserDTO = { email, password }
+  const loginObj: LoginUserDTO = req.body as LoginUserDTO
+  console.log(req.body)
   const { user, tokens } = await authServices.loginUser(loginObj)
-
   const apiResponse = {
     success: true,
     message: 'user has been successfully registered',
@@ -79,6 +73,18 @@ const resetUserPassword: RequestHandler = async (req, res) => {
 }
 
 const changeUserPassword: RequestHandler = async (req, res) => {
+  const { password, newPassword } = req.body
+  if (!password || !newPassword) {
+    throw new BadRequestError('Please provide password and new password')
+  }
+  const user = req.user as IUser
+  // const user = req.user
+  const changePasswordObj: ChangePasswordDTO = {
+    userId: user.id,
+    password,
+    newPassword,
+  }
+  await authServices.changePassword(changePasswordObj)
   const apiResponse = {
     success: true,
     message: 'Password changed, please login with new password.',
@@ -86,10 +92,19 @@ const changeUserPassword: RequestHandler = async (req, res) => {
   res.status(StatusCodes.OK).json(apiResponse)
 }
 
-const refresh: RequestHandler = async () => {
-  // check if the token is blacklisted
-  // verify refresh token
-  // generate access token
+const refresh: RequestHandler = async (req, res) => {
+  const { refresh_token } = req.body
+  if (!refresh_token) {
+    throw new BadRequestError('Please provide refresh token')
+  }
+  const tokens = await authServices.refresh(refresh_token as string)
+
+  const apiResponse = {
+    success: true,
+    message: 'token refreshed',
+    data: tokens,
+  }
+  res.status(StatusCodes.OK).json(apiResponse)
 }
 
 export {

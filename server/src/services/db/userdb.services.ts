@@ -17,17 +17,30 @@ const createUser = async (
 }
 
 const findAllUsers = async (): Promise<User[]> => {
-  const users = await User.findAll()
+  const users = await User.findAll({
+    attributes: {
+      exclude: ['createdAt', 'updatedAt'],
+    },
+  })
   return users
 }
 
 const findUserByEmail = async (email: string) => {
-  const user = await User.findOne({ where: { email: email } })
+  const user = await User.findOne({
+    where: { email: email },
+    attributes: {
+      exclude: ['createdAt', 'updatedAt'],
+    },
+  })
   return user
 }
 
 const findUserById = async (userId: string) => {
-  const user = await User.findByPk(userId)
+  const user = await User.findByPk(userId, {
+    attributes: {
+      exclude: ['createdAt', 'updatedAt'],
+    },
+  })
   return user
 }
 

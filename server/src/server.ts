@@ -5,10 +5,10 @@ import sequelize from './config/sequelize.config'
 import { logger } from './config/winston.config'
 import defineAssociations from './models/models.associations'
 
-const startDB = async (force: boolean) => {
+const startDB = async (opt?: object) => {
   try {
     await sequelize.authenticate()
-    await sequelize.sync({ force })
+    await sequelize.sync(opt)
     defineAssociations()
     logger.info('Connection to the database has been established successfully.')
   } catch (err) {
@@ -44,9 +44,17 @@ const closeServer = async (server: any): Promise<void> => {
 }
 
 const main = async () => {
+  let seqOptions
   try {
+    if (process.env.NODE_ENV === 'development') {
+      seqOptions = { force: true }
+    }
+    if (process.env.NODE_ENV === 'staging') {
+      console.log('alter should be true')
+      seqOptions = { alter: true }
+    }
     await startServer()
-    await startDB(true) // this needs dot env
+    await startDB(seqOptions) // this needs dot env
   } catch (err) {
     logger.error(err)
     await closeDB()

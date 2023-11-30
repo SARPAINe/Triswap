@@ -1,13 +1,13 @@
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import { v4 as uuidV4 } from 'uuid'
 import { config } from '../config'
-import User from '../models/user.models'
+// import User from '../models/user.models'
 import { BadRequestError } from '../errors'
 import { ITokens } from '../interfaces'
 
-const generateTokens = (user: User): ITokens => {
-  const accessToken = generateAccessToken(user)
-  const refreshToken = generateRefreshToken(user)
+const generateTokens = (userId: string): ITokens => {
+  const accessToken = generateAccessToken(userId)
+  const refreshToken = generateRefreshToken(userId)
   const tokens: ITokens = {
     access: {
       ...accessToken,
@@ -19,9 +19,9 @@ const generateTokens = (user: User): ITokens => {
   return tokens
 }
 
-const generateRefreshToken = (user: User) => {
+const generateRefreshToken = (userId: string) => {
   const payload = {
-    sub: user.id,
+    sub: userId,
     iat: Date.now(),
   }
   const expiresIn = config.jwt.refresh_token.expiresIn
@@ -36,9 +36,9 @@ const generateRefreshToken = (user: User) => {
   }
 }
 
-const generateAccessToken = (user: User) => {
+const generateAccessToken = (userId: string) => {
   const payload = {
-    sub: user.id,
+    sub: userId,
     iat: Date.now(),
   }
   const expiresIn = config.jwt.access_token.expiresIn
@@ -52,9 +52,9 @@ const generateAccessToken = (user: User) => {
   }
 }
 
-const generatePasswordResetToken = (user: User) => {
+const generatePasswordResetToken = (userId: string) => {
   const payload = {
-    sub: user.id,
+    sub: userId,
   }
   const expiresIn = config.jwt.passwordResetTokenExpiresIn
   const signedToken = jwt.sign(payload, config.jwt.secret, {
@@ -79,11 +79,23 @@ const generateUuid = () => {
   return uuidV4()
 }
 
+const verifyRefreshToken = async (refreshToken: string) => {
+  const { sub } = jwt.verify(
+    refreshToken,
+    config.jwt.refresh_token.secret,
+  ) as JwtPayload
+  if (!sub) {
+    throw new BadRequestError('Invalid payload for jwt')
+  }
+  return { userId: sub }
+}
+
 export const tokenServices = {
   generateTokens,
   generateAccessToken,
   generateRefreshToken,
   generatePasswordResetToken,
   verifyPasswordResetToken,
+  verifyRefreshToken,
   generateUuid,
 }

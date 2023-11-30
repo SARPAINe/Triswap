@@ -1,7 +1,13 @@
 import { RequestHandler } from 'express'
-import { ForbiddenError, UnauthenticatedError } from '../errors'
+import {
+  BadRequestError,
+  ForbiddenError,
+  UnauthenticatedError,
+} from '../errors'
 import User from '../models/user.models'
 import passport from 'passport'
+import { authdbServices } from '../services/db/authdb.services'
+import { IUser } from '../interfaces'
 
 const isAuthenticated = passport.authenticate('jwt', { session: false })
 
@@ -21,4 +27,19 @@ const isAdmin: RequestHandler = (req, res, next) => {
   throw new ForbiddenError('Forbidden - Insufficient privileges')
 }
 
-export { isAuthenticated, isAdmin, isAuthenticatedLocal }
+const isEmailVerified: RequestHandler = async (req, res, next) => {
+  const user = req.user as IUser
+  const userId = user.id
+
+  const authData = await authdbServices.findAuthByUserId(userId)
+  if (!authData) {
+    throw new BadRequestError('Auth data not found')
+  }
+
+  if (authData.isVerified) {
+    return next()
+  }
+  throw new ForbiddenError('Forbidden - Email not verified')
+}
+
+export { isAuthenticated, isAdmin, isEmailVerified, isAuthenticatedLocal }

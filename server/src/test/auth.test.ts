@@ -10,7 +10,7 @@ let emailVerificationToken: string
 let userToken: string
 
 beforeAll(async () => {
-  await startDB(true)
+  await startDB({ force: true })
   server = await startServer()
   const { body } = await supertest(app)
     .post(`/api/v1/auth/register`)

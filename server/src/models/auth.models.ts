@@ -3,13 +3,13 @@ import { config } from '../config'
 const sequelize = config.db.sequelize
 
 class Auth extends Model {
-  public id!: string
-  public userId!: string
-  public password!: string
-  public isVerified!: boolean
-  public verificationToken!: string | null
-  public passwordResetToken!: string | null
-  public refreshToken!: string | null
+  declare id: string
+  declare userId: string
+  declare password: string
+  declare isVerified: boolean
+  declare verificationToken: string | null
+  declare passwordResetToken: string | null
+  declare refreshToken: string | null
 }
 
 Auth.init(

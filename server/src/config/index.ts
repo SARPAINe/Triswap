@@ -4,8 +4,15 @@ dotEnv.config({ path: path.join(__dirname, './../../.env') })
 import morgan from './morgan.config'
 import sequelize from './sequelize.config'
 
+let port = process.env.PORT!
+if (process.env.NODE_ENV === 'staging') {
+  port = process.env.STG_PORT!
+} else if (process.env.NODE_ENV === 'development') {
+  port = process.env.DEV_PORT!
+}
+
 export const config = {
-  port: process.env.PORT!,
+  port,
   app: {
     baseURL: `http://localhost:3000/api/v1`,
   },

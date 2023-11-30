@@ -21,17 +21,25 @@ const findAuthByUserId = async (userId: string) => {
     where: {
       userId: userId,
     },
+    attributes: {
+      exclude: ['createdAt', 'updatedAt'],
+    },
   })
   return authData
 }
 
-const findAuthByVerificationToken = async (verificationToken: string) => {
-  const authData = await Auth.findOne({ where: { verificationToken } })
+const findAuthByEmailVerificationToken = async (verificationToken: string) => {
+  const authData = await Auth.findOne({
+    where: { verificationToken },
+    attributes: {
+      exclude: ['createdAt', 'updatedAt'],
+    },
+  })
   return authData
 }
 
 export const authdbServices = {
   createAuth,
   findAuthByUserId,
-  findAuthByVerificationToken,
+  findAuthByEmailVerificationToken,
 }

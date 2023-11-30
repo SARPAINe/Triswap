@@ -1,13 +1,14 @@
 // register user
-export interface RegisterUserDTO {
-  username: string
-  email: string
+export interface RegisterUserDTO extends UserRegisterUserDTO {
   password: string
 }
 
 export interface UserRegisterUserDTO {
-  username: string
   email: string
+  firstName?: string
+  lastName?: string
+  image?: string
+  phone?: string
 }
 
 export interface AuthRegisterUserDTO {
@@ -22,6 +23,9 @@ export interface LoginUserDTO {
   password: string
 }
 
-// forgot password
-
-// reset password
+// change password
+export interface ChangePasswordDTO {
+  userId: string
+  password: string
+  newPassword: string
+}

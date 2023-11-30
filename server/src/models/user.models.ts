@@ -3,10 +3,13 @@ import { config } from '../config'
 const sequelize = config.db.sequelize
 
 class User extends Model {
-  public id!: string
-  public username!: string
-  public role!: string
-  public email!: string
+  declare id: string
+  declare role: string
+  declare email: string
+  declare image: string
+  declare phone: string
+  declare lastName: string
+  declare firstName: string
 }
 
 User.init(
@@ -23,9 +26,20 @@ User.init(
       allowNull: false,
     },
 
-    username: {
+    firstName: {
       type: DataTypes.STRING,
-      allowNull: false,
+    },
+
+    lastName: {
+      type: DataTypes.STRING,
+    },
+
+    image: {
+      type: DataTypes.STRING,
+    },
+
+    phone: {
+      type: DataTypes.STRING,
     },
 
     role: {
