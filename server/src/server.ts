@@ -47,7 +47,7 @@ const main = async () => {
   let seqOptions
   try {
     if (process.env.NODE_ENV === 'development') {
-      seqOptions = { force: true }
+      seqOptions = { alter: true }
     }
     if (process.env.NODE_ENV === 'staging') {
       console.log('alter should be true')
