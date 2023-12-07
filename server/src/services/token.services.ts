@@ -63,39 +63,14 @@ const generatePasswordResetToken = (userId: string) => {
   return signedToken
 }
 
-const verifyPasswordResetToken = async (passwordResetToken: string) => {
-  const { sub } = jwt.verify(
-    passwordResetToken,
-    config.jwt.secret,
-  ) as JwtPayload
-
-  if (!sub) {
-    throw new BadRequestError('Invalid payload for jwt')
-  }
-  return { userId: sub }
-}
-
-const generateUuid = () => {
-  return uuidV4()
-}
-
-const verifyRefreshToken = async (refreshToken: string) => {
-  const { sub } = jwt.verify(
-    refreshToken,
-    config.jwt.refresh_token.secret,
-  ) as JwtPayload
-  if (!sub) {
-    throw new BadRequestError('Invalid payload for jwt')
-  }
-  return { userId: sub }
+const createPair = async (tokenObj: object) => {
+  const newToken = await tokendbServices.createPair(tokenObj)
+  return newToken
 }
 
 export const tokenServices = {
-  generateTokens,
-  generateAccessToken,
-  generateRefreshToken,
-  generatePasswordResetToken,
-  verifyPasswordResetToken,
-  verifyRefreshToken,
-  generateUuid,
+  getAllTokens,
+  createToken,
+  createPair,
+  getToken,
 }

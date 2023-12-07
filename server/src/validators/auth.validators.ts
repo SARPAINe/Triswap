@@ -1,9 +1,5 @@
 import Joi from 'joi'
-
-const uuidv4Pattern =
-  /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/
-
-const jwtPattern = /^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.[A-Za-z0-9-_.+/=]*$/
+import { jwtPattern, uuidv4Pattern } from '../utils'
 
 const email = Joi.string().email().trim().lowercase().required()
 const password = Joi.string().required().min(6).max(12).required()
