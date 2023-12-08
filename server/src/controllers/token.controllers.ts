@@ -87,5 +87,5 @@ export {
   getToken,
   getTokenPairs,
   getTokenPair,
-  createPair,
+  createTokenPair,
 }

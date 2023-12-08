@@ -4,7 +4,7 @@ import Token from './token.models'
 import TokenPair from './tokenPair.models'
 
 const defineAssociations = () => {
-  // To create a One-To-One relationship, the hasOne and belongsTo associations are used together;
+  // user-auth association one-to-one
   User.hasOne(Auth, { foreignKey: 'userId', onDelete: 'CASCADE' })
   Auth.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' })
 

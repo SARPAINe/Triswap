@@ -2,13 +2,13 @@ import Joi from 'joi'
 import { jwtPattern, uuidv4Pattern } from '../utils'
 
 const email = Joi.string().email().trim().lowercase().required()
-const password = Joi.string().required().min(6).max(12).required()
+const password = Joi.string().required().min(6).max(12).required() // no pattern matched
 
 export const registerUserSchema = Joi.object({
   lastName: Joi.string().min(3).max(10).trim().lowercase(),
   firstName: Joi.string().min(3).max(10).trim().lowercase(),
   image: Joi.string(),
-  phone: Joi.number(),
+  phone: Joi.string(),
   email,
   password,
 })

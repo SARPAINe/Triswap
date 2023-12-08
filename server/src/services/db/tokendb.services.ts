@@ -1,7 +1,7 @@
 import { CreateTokenDTO, CreateTokenPairDTO } from '../../dto'
+import { Op } from 'sequelize'
 import Token from '../../models/token.models'
 import TokenPair from '../../models/tokenPair.models'
-import { Op } from 'sequelize'
 
 const createToken = async (tokenObj: CreateTokenDTO) => {
   const newToken = await Token.create({
@@ -22,20 +22,20 @@ const getTokenPairs = async () => {
       {
         model: Token,
         as: 'tokenA',
-        attributes: ['token'],
+        attributes: ['token', 'address'],
       },
       {
         model: Token,
         as: 'tokenB',
-        attributes: ['token'],
+        attributes: ['token', 'address'],
       },
     ],
   })
 
   const formattedTokenPairs = tokenPairData.map(pair => ({
     id: pair.id,
-    tokenA: pair.tokenA.token,
-    tokenB: pair.tokenB.token,
+    tokenA: { name: pair.tokenA.token, address: pair.tokenA.address },
+    tokenB: { name: pair.tokenB.token, address: pair.tokenB.address },
     pairAddress: pair.pairAddress,
   }))
 
@@ -51,12 +51,12 @@ const getTokenPair = async (tokenId: string) => {
       {
         model: Token,
         as: 'tokenA',
-        attributes: ['token'],
+        attributes: ['token', 'address'],
       },
       {
         model: Token,
         as: 'tokenB',
-        attributes: ['token'],
+        attributes: ['token', 'address'],
       },
     ],
     attributes: {
@@ -64,15 +64,7 @@ const getTokenPair = async (tokenId: string) => {
     },
   })
 
-  // const formattedTokenPairs = tokenPairData.map(pair => ({
-  //   id: pair.id,
-  //   tokenA: pair.tokenA.token,
-  //   tokenB: pair.tokenB.token,
-  //   pairAddress: pair.pairAddress,
-  // }))
-
   return tokenPairData
-  // return formattedTokenPairs
 }
 
 const findAllTokens = async () => {
