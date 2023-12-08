@@ -1,6 +1,5 @@
 import { DataTypes, Model } from 'sequelize'
-import { config } from '../config'
-const sequelize = config.db.sequelize
+import sequelize from './../config/sequelize.config'
 
 class User extends Model {
   declare id: string

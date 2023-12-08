@@ -1,101 +1,51 @@
-import jwt, { JwtPayload } from 'jsonwebtoken'
-import { v4 as uuidV4 } from 'uuid'
-import { config } from '../config'
-// import User from '../models/user.models'
+import { CreateTokenDTO, CreateTokenPairDTO } from '../dto'
 import { BadRequestError } from '../errors'
-import { ITokens } from '../interfaces'
+import { tokendbServices } from './db/tokendb.services'
 
-const generateTokens = (userId: string): ITokens => {
-  const accessToken = generateAccessToken(userId)
-  const refreshToken = generateRefreshToken(userId)
-  const tokens: ITokens = {
-    access: {
-      ...accessToken,
-    },
-    refresh: {
-      ...refreshToken,
-    },
-  }
+const getAllTokens = async () => {
+  const tokens = await tokendbServices.findAllTokens()
   return tokens
 }
 
-const generateRefreshToken = (userId: string) => {
-  const payload = {
-    sub: userId,
-    iat: Date.now(),
-  }
-  const expiresIn = config.jwt.refresh_token.expiresIn
-  console.log(expiresIn)
-  const signedToken = jwt.sign(payload, config.jwt.refresh_token.secret, {
-    expiresIn,
-  })
-
-  return {
-    refresh_token: signedToken,
-    expires: new Date(Date.now() + expiresIn * 1000).toISOString(),
-  }
+const getToken = async (tokenId: string) => {
+  const token = await tokendbServices.findTokenById(tokenId)
+  return token
 }
 
-const generateAccessToken = (userId: string) => {
-  const payload = {
-    sub: userId,
-    iat: Date.now(),
-  }
-  const expiresIn = config.jwt.access_token.expiresIn
-  console.log(expiresIn)
-  const signedToken = jwt.sign(payload, config.jwt.access_token.secret, {
-    expiresIn,
-  })
-  return {
-    access_token: signedToken,
-    expires: new Date(Date.now() + expiresIn * 1000).toISOString(),
-  }
+const createToken = async (tokenObj: CreateTokenDTO) => {
+  const newToken = await tokendbServices.createToken(tokenObj)
+  return newToken
 }
 
-const generatePasswordResetToken = (userId: string) => {
-  const payload = {
-    sub: userId,
+const createTokenPair = async (tokenPairObj: CreateTokenPairDTO) => {
+  const tokenAData = await tokendbServices.findTokenById(tokenPairObj.tokenAId)
+  const tokenBData = await tokendbServices.findTokenById(tokenPairObj.tokenBId)
+  if (!tokenAData) {
+    throw new BadRequestError(`Token A not found. Id: ${tokenPairObj.tokenAId}`)
   }
-  const expiresIn = config.jwt.passwordResetTokenExpiresIn
-  const signedToken = jwt.sign(payload, config.jwt.secret, {
-    expiresIn,
-  })
-  return signedToken
+  if (!tokenBData) {
+    throw new BadRequestError(`Token B not found. Id: ${tokenPairObj.tokenBId}`)
+  }
+
+  const newTokenPair = await tokendbServices.createTokenPair(tokenPairObj)
+  return newTokenPair
 }
 
-const verifyPasswordResetToken = async (passwordResetToken: string) => {
-  const { sub } = jwt.verify(
-    passwordResetToken,
-    config.jwt.secret,
-  ) as JwtPayload
-
-  if (!sub) {
-    throw new BadRequestError('Invalid payload for jwt')
-  }
-  return { userId: sub }
+const getAllTokenPairs = async () => {
+  const tokenPairsData = await tokendbServices.getTokenPairs()
+  return tokenPairsData
 }
 
-const generateUuid = () => {
-  return uuidV4()
-}
-
-const verifyRefreshToken = async (refreshToken: string) => {
-  const { sub } = jwt.verify(
-    refreshToken,
-    config.jwt.refresh_token.secret,
-  ) as JwtPayload
-  if (!sub) {
-    throw new BadRequestError('Invalid payload for jwt')
-  }
-  return { userId: sub }
+const getTokenPair = async (tokenId: string) => {
+  const tokenPairData = await tokendbServices.getTokenPair(tokenId)
+  return tokenPairData
 }
 
 export const tokenServices = {
-  generateTokens,
-  generateAccessToken,
-  generateRefreshToken,
-  generatePasswordResetToken,
-  verifyPasswordResetToken,
-  verifyRefreshToken,
-  generateUuid,
+  getAllTokens,
+  createToken,
+  createTokenPair,
+  getToken,
+  getAllTokenPairs,
+  getTokenPair,
 }
