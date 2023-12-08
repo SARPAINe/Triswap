@@ -8,6 +8,12 @@ export const createTokenSchema = Joi.object({
 })
 
 export const createTokenPairSchema = Joi.object({
+  tokenA: Joi.string().trim().required(),
+  tokenB: Joi.string().trim().required(),
+  pairAddress: Joi.string().trim().required(),
+})
+
+export const createTokenPairSchemaV1 = Joi.object({
   tokenAId: Joi.string().trim().regex(uuidv4Pattern).required(),
   tokenBId: Joi.string().trim().regex(uuidv4Pattern).required(),
   pairAddress: Joi.string().trim().required(),
