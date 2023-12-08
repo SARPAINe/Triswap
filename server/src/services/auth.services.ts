@@ -9,7 +9,7 @@ import {
 } from '../errors'
 import type User from '../models/user.models'
 import { emailServices } from './email.services'
-import { tokenServices } from './token.services'
+import { authTokenServices } from './authToken.services'
 import {
   AuthRegisterUserDTO,
   ChangePasswordDTO,
@@ -27,7 +27,7 @@ const registerUser = async (
 }> => {
   const { password, ...userData } = userObj
   const hashedPassword = await cryptoServices.hashPassword(password)
-  const verificationToken = tokenServices.generateUuid()
+  const verificationToken = authTokenServices.generateUuid()
   const newUser = await userdbServices.createUser(userData)
   const authObj: AuthRegisterUserDTO = {
     userId: newUser.id,
@@ -72,7 +72,7 @@ const loginUser = async (
   }
 
   // return access_token and refresh_token
-  const tokens = tokenServices.generateTokens(user.id)
+  const tokens = authTokenServices.generateTokens(user.id)
   authData.refreshToken = tokens.refresh.refresh_token
   await authData.save()
 
@@ -125,7 +125,9 @@ const forgotPassword = async (email: string) => {
       'something terrible happened. user data exists but no auth data',
     )
   }
-  const passwordResetToken = tokenServices.generatePasswordResetToken(user.id)
+  const passwordResetToken = authTokenServices.generatePasswordResetToken(
+    user.id,
+  )
   authData.passwordResetToken = passwordResetToken
   await authData.save()
   emailServices.sendForgotPasswordEmail(user.email, passwordResetToken)
@@ -137,7 +139,7 @@ const resetPassword = async (
   newPassword: string,
 ) => {
   const { userId } =
-    await tokenServices.verifyPasswordResetToken(passwordResetToken)
+    await authTokenServices.verifyPasswordResetToken(passwordResetToken)
 
   const user = await userdbServices.findUserById(userId)
 
@@ -164,7 +166,7 @@ const resetPassword = async (
 }
 
 const refresh = async (refreshToken: string) => {
-  const { userId } = await tokenServices.verifyRefreshToken(refreshToken) // token is verified
+  const { userId } = await authTokenServices.verifyRefreshToken(refreshToken) // token is verified
   const authData = await authdbServices.findAuthByUserId(userId)
   if (!authData) {
     throw new BadRequestError('Auth data not found')
@@ -174,7 +176,7 @@ const refresh = async (refreshToken: string) => {
     throw new BadRequestError('Old refresh token reuse')
   }
 
-  const tokens = tokenServices.generateTokens(userId)
+  const tokens = authTokenServices.generateTokens(userId)
   authData.refreshToken = tokens.refresh.refresh_token
   await authData.save()
 
