@@ -93,7 +93,9 @@ const changeUserPassword: RequestHandler = async (req, res) => {
 }
 
 const refresh: RequestHandler = async (req, res) => {
-  const { refresh_token } = req.body
+  // const { refresh_token } = req.body // here extract from cookie
+  const refresh_token = req.cookies.refresh_token // should be secured
+  console.log(refresh_token)
   if (!refresh_token) {
     throw new BadRequestError('Please provide refresh token')
   }

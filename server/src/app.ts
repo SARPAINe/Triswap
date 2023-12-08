@@ -2,6 +2,7 @@ import express from 'express'
 import compression from 'compression'
 import passport from 'passport'
 import 'express-async-errors'
+import cookieParser from 'cookie-parser'
 
 // security
 import helmet from 'helmet'
@@ -23,6 +24,7 @@ import notFoundMiddleware from './middlewares/notFound.middleware'
 
 const app = express()
 
+app.use(cookieParser())
 app.set('trust proxy', 1)
 app.use(cors())
 app.use(helmet())

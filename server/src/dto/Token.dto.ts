@@ -7,6 +7,13 @@ export interface CreateTokenDTO {
 
 export interface CreateTokenPairDTO {
   userId: string
+  tokenA: string
+  tokenB: string
+  pairAddress: string
+}
+
+export interface CreateTokenPairWIdDTO {
+  userId: string
   tokenAId: string
   tokenBId: string
   pairAddress: string

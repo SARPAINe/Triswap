@@ -33,7 +33,7 @@ const getAllTokens: RequestHandler = async (req, res) => {
 
 const getToken: RequestHandler = async (req, res) => {
   const { id: tokenId } = req.params
-  const token = await tokenServices.getToken(tokenId)
+  const token = await tokenServices.getToken(tokenId.toUpperCase())
 
   const apiResponse = {
     success: true,
