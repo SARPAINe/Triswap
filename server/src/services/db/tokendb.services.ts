@@ -1,19 +1,35 @@
-import { CreateTokenDTO, CreateTokenPairWIdDTO } from '../../dto'
-import { Op } from 'sequelize'
+import { CreateTokenPairDTO, CreateTokenPairWIdDTO } from '../../dto'
 import Token from '../../models/token.models'
 import TokenPair from '../../models/tokenPair.models'
 import { BadRequestError } from '../../errors'
+import { Op } from 'sequelize'
+import sequelize from '../../config/sequelize.config'
 
-const createToken = async (tokenObj: CreateTokenDTO) => {
-  const newToken = await Token.create({
-    ...tokenObj,
-  })
-  return newToken
-}
-
-const createTokenPair = async (tokenPairObj: CreateTokenPairWIdDTO) => {
-  const newTokenPair = await TokenPair.create({ ...tokenPairObj })
-  return newTokenPair
+const createTokenPair = async (tokenPairObj: CreateTokenPairDTO) => {
+  const { userId, pairAddress, tokenA, tokenB } = tokenPairObj
+  const transaction = await sequelize.transaction()
+  try {
+    const tokenAData = await Token.create(
+      { ...tokenA, userId },
+      { transaction },
+    )
+    const tokenBData = await Token.create(
+      { ...tokenB, userId },
+      { transaction },
+    )
+    const pair: CreateTokenPairWIdDTO = {
+      pairAddress,
+      tokenAId: tokenAData.id,
+      tokenBId: tokenBData.id,
+      userId,
+    }
+    const newTokenPair = await TokenPair.create({ ...pair }, { transaction })
+    transaction.commit()
+    return newTokenPair
+  } catch (err) {
+    await transaction.rollback()
+    throw err
+  }
 }
 
 const getTokenPairs = async () => {
@@ -35,8 +51,8 @@ const getTokenPairs = async () => {
 
   const formattedTokenPairs = tokenPairData.map(pair => ({
     id: pair.id,
-    tokenA: { name: pair.tokenA.token, address: pair.tokenA.address },
-    tokenB: { name: pair.tokenB.token, address: pair.tokenB.address },
+    tokenA: { name: pair.tokenA.name, address: pair.tokenA.address },
+    tokenB: { name: pair.tokenB.name, address: pair.tokenB.address },
     pairAddress: pair.pairAddress,
   }))
 
@@ -70,23 +86,18 @@ const getTokenPair = async (tokenName: string) => {
   })
 
   const formattedTokenPairs = tokenPairData.map(pair => {
-    const isLTCInTokenA = pair.tokenA.token === tokenName // jodi tokenA LTC hoy
-    console.log(pair)
+    const isLTCInTokenA = pair.tokenA.name === tokenName // jodi tokenA LTC hoy
     return {
       id: pair.id,
       pairAddress: pair.pairAddress,
-      // userId: pair.userId,
       token: isLTCInTokenA ? pair.tokenB : pair.tokenA,
     }
-    // id: pair.id,
-    // tokenA: { name: pair.tokenA.token, address: pair.tokenA.address },
-    // tokenB: { name: pair.tokenB.token, address: pair.tokenB.address },
-    // pairAddress: pair.pairAddress,
   })
 
-  console.log(formattedTokenPairs)
-
-  return formattedTokenPairs
+  return {
+    tokenAddress: tokenData.address,
+    tokenPairs: formattedTokenPairs,
+  }
 }
 
 const findAllTokens = async () => {
@@ -123,7 +134,6 @@ export const tokendbServices = {
   findAllTokens,
   findTokenById,
   findTokenByName,
-  createToken,
   createTokenPair,
   getTokenPairs,
   getTokenPair,

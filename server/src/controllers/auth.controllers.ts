@@ -18,7 +18,6 @@ const registerUser: RequestHandler = async (req, res) => {
 
 const loginUser: RequestHandler = async (req, res) => {
   const loginObj: LoginUserDTO = req.body as LoginUserDTO
-  console.log(req.body)
   const { user, tokens } = await authServices.loginUser(loginObj)
   const apiResponse = {
     success: true,
@@ -78,7 +77,6 @@ const changeUserPassword: RequestHandler = async (req, res) => {
     throw new BadRequestError('Please provide password and new password')
   }
   const user = req.user as IUser
-  // const user = req.user
   const changePasswordObj: ChangePasswordDTO = {
     userId: user.id,
     password,
@@ -93,9 +91,8 @@ const changeUserPassword: RequestHandler = async (req, res) => {
 }
 
 const refresh: RequestHandler = async (req, res) => {
-  // const { refresh_token } = req.body // here extract from cookie
-  const refresh_token = req.cookies.refresh_token // should be secured
-  console.log(refresh_token)
+  const { refresh_token } = req.body // here extract from cookie
+
   if (!refresh_token) {
     throw new BadRequestError('Please provide refresh token')
   }

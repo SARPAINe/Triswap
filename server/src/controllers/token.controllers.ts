@@ -1,24 +1,8 @@
 import { RequestHandler } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { tokenServices } from '../services/token.services'
-import { CreateTokenDTO, CreateTokenPairDTO } from '../dto'
+import { CreateTokenPairDTO } from '../dto'
 import User from '../models/user.models'
-
-const createToken: RequestHandler = async (req, res) => {
-  const { id: userId } = req.user as User
-  const tokenObj: CreateTokenDTO = {
-    ...req.body,
-    userId,
-  }
-  const newToken = await tokenServices.createToken(tokenObj)
-
-  const apiResponse = {
-    success: true,
-    message: 'New Token Created',
-    data: newToken,
-  }
-  res.status(StatusCodes.CREATED).json(apiResponse)
-}
 
 const getAllTokens: RequestHandler = async (req, res) => {
   const tokens = await tokenServices.getAllTokens()
@@ -81,11 +65,4 @@ const getTokenPairs: RequestHandler = async (req, res) => {
   res.status(StatusCodes.OK).json(apiResponse)
 }
 
-export {
-  createToken,
-  getAllTokens,
-  getToken,
-  getTokenPairs,
-  getTokenPair,
-  createTokenPair,
-}
+export { getAllTokens, getToken, getTokenPairs, getTokenPair, createTokenPair }

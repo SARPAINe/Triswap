@@ -16,7 +16,6 @@ const morgan = config.logs.morgan
 import authRoutes from './routes/v1/auth.routes'
 import userRoutes from './routes/v1/user.routes'
 import tokenRoutes from './routes/v1/token.routes'
-import ethRoutes from './routes/v1/eth.routes'
 
 // middlewares
 import errorHandlerMiddleware from './middlewares/errorHandler.middleware'
@@ -26,7 +25,13 @@ const app = express()
 
 app.use(cookieParser())
 app.set('trust proxy', 1)
-app.use(cors())
+
+app.use(
+  cors({
+    origin: '*',
+  }),
+)
+
 app.use(helmet())
 app.use(morgan)
 app.use(compression())
@@ -41,7 +46,6 @@ app.use(passport.initialize())
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/user', userRoutes)
 app.use('/api/v1/token', tokenRoutes)
-app.use('/api/v1/eth', ethRoutes)
 
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)
