@@ -46,6 +46,6 @@ router
     [isAuthenticated, validator('body', changePasswordSchema)],
     changeUserPassword,
   )
-router.route('/refresh').get(refresh)
+router.route('/refresh').post(refresh)
 
 export default router

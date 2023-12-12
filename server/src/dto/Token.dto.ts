@@ -1,5 +1,6 @@
+// change token to name
 export interface CreateTokenDTO {
-  token: string
+  name: string
   description?: string
   address: string
   userId: string
@@ -7,9 +8,15 @@ export interface CreateTokenDTO {
 
 export interface CreateTokenPairDTO {
   userId: string
-  tokenA: string
-  tokenB: string
   pairAddress: string
+  tokenA: {
+    name: string
+    address: string
+  }
+  tokenB: {
+    name: string
+    address: string
+  }
 }
 
 export interface CreateTokenPairWIdDTO {

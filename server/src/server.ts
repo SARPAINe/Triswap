@@ -24,8 +24,8 @@ const closeDB = async () => {
 
 const startServer = async (): Promise<any> => {
   try {
-    const server = app.listen(config.port, () => {
-      logger.info(`server running on port ${config.port}`)
+    const server = app.listen(config.app.port, () => {
+      logger.info(`server running on port ${config.app.port}`)
     })
     return server
   } catch (err) {
@@ -47,7 +47,7 @@ const main = async () => {
   let seqOptions
   try {
     if (process.env.NODE_ENV === 'development') {
-      seqOptions = { alter: true }
+      seqOptions = { force: true }
     }
     if (process.env.NODE_ENV === 'staging') {
       console.log('alter should be true')

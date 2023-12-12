@@ -1,5 +1,4 @@
-import { CreateTokenDTO, CreateTokenPairDTO } from '../dto'
-import { BadRequestError } from '../errors'
+import { CreateTokenPairDTO } from '../dto'
 import { tokendbServices } from './db/tokendb.services'
 
 const getAllTokens = async () => {
@@ -8,36 +7,13 @@ const getAllTokens = async () => {
 }
 
 const getToken = async (tokenId: string) => {
-  // const token = await tokendbServices.findTokenById(tokenId)
   const token = await tokendbServices.findTokenByName(tokenId)
   return token
 }
 
-const createToken = async (tokenObj: CreateTokenDTO) => {
-  const newToken = await tokendbServices.createToken(tokenObj)
-  return newToken
-}
-
 const createTokenPair = async (tokenPairObj: CreateTokenPairDTO) => {
-  // const tokenAData = await tokendbServices.findTokenById(tokenPairObj.tokenAId)
-  // const tokenBData = await tokendbServices.findTokenById(tokenPairObj.tokenBId)
-  const tokenAData = await tokendbServices.findTokenByName(tokenPairObj.tokenA)
-  const tokenBData = await tokendbServices.findTokenByName(tokenPairObj.tokenB)
-  if (!tokenAData) {
-    throw new BadRequestError(`Token A not found. Id: ${tokenPairObj.tokenA}`)
-  }
-  if (!tokenBData) {
-    throw new BadRequestError(`Token B not found. Id: ${tokenPairObj.tokenB}`)
-  }
+  const newTokenPair = await tokendbServices.createTokenPair(tokenPairObj)
 
-  const tokenPairObjWId = {
-    userId: tokenPairObj.userId,
-    tokenAId: tokenAData.id,
-    tokenBId: tokenBData.id,
-    pairAddress: tokenPairObj.pairAddress,
-  }
-
-  const newTokenPair = await tokendbServices.createTokenPair(tokenPairObjWId)
   return newTokenPair
 }
 
@@ -53,7 +29,6 @@ const getTokenPair = async (tokenId: string) => {
 
 export const tokenServices = {
   getAllTokens,
-  createToken,
   createTokenPair,
   getToken,
   getAllTokenPairs,

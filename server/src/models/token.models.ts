@@ -4,7 +4,7 @@ import User from './user.models'
 
 class Token extends Model {
   declare id: string
-  declare token: string
+  declare name: string
   declare description: string
   declare address: string
 }
@@ -24,7 +24,7 @@ Token.init(
         key: 'id',
       },
     },
-    token: {
+    name: {
       type: DataTypes.STRING,
       unique: true,
       allowNull: false,
