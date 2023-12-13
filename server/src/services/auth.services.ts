@@ -62,7 +62,7 @@ const loginUser = async (
       'something terrible happened. user data exists but no auth data',
     )
   }
-  //
+
   const isPasswordCorrect = await cryptoServices.comparePassword(
     password,
     authData.password,
@@ -71,7 +71,6 @@ const loginUser = async (
     throw new UnauthenticatedError('Invalid Credentials')
   }
 
-  // return access_token and refresh_token
   const tokens = authTokenServices.generateTokens(user.id)
   authData.refreshToken = tokens.refresh.refresh_token
   await authData.save()
@@ -183,6 +182,19 @@ const refresh = async (refreshToken: string) => {
   return tokens
 }
 
+const logoutUser = async (user: IUser) => {
+  const authData = await authdbServices.findAuthByUserId(user.id)
+  if (!authData) {
+    throw new BadRequestError('Auth data not found')
+  }
+
+  if (authData.refreshToken === null) {
+    throw new BadRequestError('User already logged out')
+  }
+  authData.refreshToken = null
+  await authData.save()
+}
+
 export const authServices = {
   registerUser,
   loginUser,
@@ -191,4 +203,5 @@ export const authServices = {
   forgotPassword,
   resetPassword,
   refresh,
+  logoutUser,
 }

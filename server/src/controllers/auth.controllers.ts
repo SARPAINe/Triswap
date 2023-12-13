@@ -106,6 +106,17 @@ const refresh: RequestHandler = async (req, res) => {
   res.status(StatusCodes.OK).json(apiResponse)
 }
 
+const logoutUser: RequestHandler = async (req, res) => {
+  const user = req.user as IUser
+  await authServices.logoutUser(user)
+
+  const apiResponse = {
+    success: true,
+    message: 'User logged out successfully',
+  }
+  res.status(StatusCodes.OK).json(apiResponse)
+}
+
 export {
   registerUser,
   loginUser,
@@ -114,4 +125,5 @@ export {
   resetUserPassword,
   changeUserPassword,
   refresh,
+  logoutUser,
 }

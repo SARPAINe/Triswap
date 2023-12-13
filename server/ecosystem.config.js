@@ -3,7 +3,7 @@ module.exports = {
   apps: [
     {
       name: "bcs-be-stg",
-      script: "./build/server.js",
+      script: "./build/index.js",
       env: {
         NODE_ENV: "staging",
         PORT: 3000

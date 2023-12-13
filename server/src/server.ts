@@ -43,27 +43,4 @@ const closeServer = async (server: any): Promise<void> => {
   }
 }
 
-const main = async () => {
-  let seqOptions
-  try {
-    if (process.env.NODE_ENV === 'development') {
-      seqOptions = { force: true }
-    }
-    if (process.env.NODE_ENV === 'staging') {
-      console.log('alter should be true')
-      seqOptions = { alter: true }
-    }
-    await startServer()
-    await startDB(seqOptions) // this needs dot env
-  } catch (err) {
-    logger.error(err)
-    await closeDB()
-    process.exit(1)
-  }
-}
-
-if (require.main === module) {
-  main()
-}
-
 export { startDB, closeDB, startServer, closeServer }

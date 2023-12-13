@@ -2,6 +2,7 @@ import express from 'express'
 import {
   registerUser,
   loginUser,
+  logoutUser,
   verifyUserEmail,
   forgotUserPassword,
   resetUserPassword,
@@ -47,5 +48,6 @@ router
     changeUserPassword,
   )
 router.route('/refresh').post(refresh)
+router.route('/logout').post([isAuthenticated], logoutUser)
 
 export default router
