@@ -1,9 +1,9 @@
-import { CreateTokenPairDTO, CreateTokenPairWIdDTO } from '../../dto'
-import Token from '../../models/token.models'
-import TokenPair from '../../models/tokenPair.models'
-import { BadRequestError } from '../../errors'
+import { CreateTokenPairDTO, CreateTokenPairWIdDTO } from '../dto'
+import Token from '../models/token.models'
+import TokenPair from '../models/tokenPair.models'
+import { BadRequestError } from '../errors'
 import { Op } from 'sequelize'
-import sequelize from '../../config/sequelize.config'
+import sequelize from '../config/sequelize.config'
 
 const createTokenPair = async (tokenPairObj: CreateTokenPairDTO) => {
   const { userId, pairAddress, tokenA, tokenB } = tokenPairObj
@@ -130,7 +130,7 @@ const findTokenByName = async (tokenName: string) => {
   return token
 }
 
-export const tokendbServices = {
+export const tokenRepository = {
   findAllTokens,
   findTokenById,
   findTokenByName,

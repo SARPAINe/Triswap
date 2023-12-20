@@ -1,7 +1,6 @@
-// import { ICreateUser } from '../../interfaces'
 import { Transaction } from 'sequelize'
-import User from '../../models/user.models'
-import { UserRegisterUserDTO } from '../../dto'
+import User from '../models/user.models'
+import { UserRegisterUserDTO } from '../dto'
 
 const createUser = async (
   user: UserRegisterUserDTO,
@@ -44,7 +43,7 @@ const findUserById = async (userId: string) => {
   return user
 }
 
-export const userdbServices = {
+export const userRepository = {
   createUser,
   findAllUsers,
   findUserByEmail,

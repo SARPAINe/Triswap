@@ -1,7 +1,7 @@
 import { Transaction } from 'sequelize'
 
-import Auth from '../../models/auth.models'
-import { AuthRegisterUserDTO } from '../../dto'
+import Auth from '../models/auth.models'
+import { AuthRegisterUserDTO } from '../dto'
 
 const createAuth = async (
   authObj: AuthRegisterUserDTO,
@@ -38,7 +38,7 @@ const findAuthByEmailVerificationToken = async (verificationToken: string) => {
   return authData
 }
 
-export const authdbServices = {
+export const authRepository = {
   createAuth,
   findAuthByUserId,
   findAuthByEmailVerificationToken,

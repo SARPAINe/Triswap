@@ -1,6 +1,6 @@
 import { cryptoServices } from './crypto.services'
-import { userdbServices } from './db/userdb.services'
-import { authdbServices } from './db/authdb.services'
+import { userRepository } from '../repository/user.repository'
+import { authRepository } from '../repository/auth.repository'
 import {
   BadRequestError,
   ForbiddenError,
@@ -28,13 +28,13 @@ const registerUser = async (
   const { password, ...userData } = userObj
   const hashedPassword = await cryptoServices.hashPassword(password)
   const verificationToken = authTokenServices.generateUuid()
-  const newUser = await userdbServices.createUser(userData)
+  const newUser = await userRepository.createUser(userData)
   const authObj: AuthRegisterUserDTO = {
     userId: newUser.id,
     password: hashedPassword,
     verificationToken,
   }
-  await authdbServices.createAuth(authObj)
+  await authRepository.createAuth(authObj)
   emailServices.sendVerificationEmail(newUser.email, verificationToken)
 
   const user = {
@@ -50,12 +50,12 @@ const loginUser = async (
   loginObj: LoginUserDTO,
 ): Promise<{ user: User; tokens: ITokens }> => {
   const { email, password } = loginObj
-  const user = await userdbServices.findUserByEmail(email)
+  const user = await userRepository.findUserByEmail(email)
   if (!user) {
     throw new UnauthenticatedError('Invalid Credentials')
   }
 
-  const authData = await authdbServices.findAuthByUserId(user.id)
+  const authData = await authRepository.findAuthByUserId(user.id)
   if (!authData) {
     throw new CustomAPIError(
       'something terrible happened. user data exists but no auth data',
@@ -79,7 +79,7 @@ const loginUser = async (
 
 const verifyEmail = async (verificationToken: string) => {
   const authData =
-    await authdbServices.findAuthByEmailVerificationToken(verificationToken)
+    await authRepository.findAuthByEmailVerificationToken(verificationToken)
   if (!authData) {
     throw new BadRequestError('Email already verified')
   }
@@ -92,7 +92,7 @@ const verifyEmail = async (verificationToken: string) => {
 const changePassword = async (changePasswordObj: ChangePasswordDTO) => {
   const { userId, password, newPassword } = changePasswordObj
 
-  const authData = await authdbServices.findAuthByUserId(userId)
+  const authData = await authRepository.findAuthByUserId(userId)
   if (!authData) {
     throw new BadRequestError('Auth data not found')
   }
@@ -111,12 +111,12 @@ const changePassword = async (changePasswordObj: ChangePasswordDTO) => {
 }
 
 const forgotPassword = async (email: string) => {
-  const user = await userdbServices.findUserByEmail(email)
+  const user = await userRepository.findUserByEmail(email)
   if (!user) {
     throw new BadRequestError('Invalid email')
   }
 
-  const authData = await authdbServices.findAuthByUserId(user.id)
+  const authData = await authRepository.findAuthByUserId(user.id)
 
   if (!authData) {
     throw new CustomAPIError(
@@ -139,13 +139,13 @@ const resetPassword = async (
   const { userId } =
     await authTokenServices.verifyPasswordResetToken(passwordResetToken)
 
-  const user = await userdbServices.findUserById(userId)
+  const user = await userRepository.findUserById(userId)
 
   if (!user) {
     throw new BadRequestError('user not found from auth service')
   }
   // get auth data check if the user has a password reset token, check and delete
-  const authData = await authdbServices.findAuthByUserId(user.id)
+  const authData = await authRepository.findAuthByUserId(user.id)
 
   if (!authData) {
     throw new CustomAPIError('Auth data does not exist')
@@ -166,11 +166,11 @@ const resetPassword = async (
 const refresh = async (refreshToken: string) => {
   const { userId } = await authTokenServices.verifyRefreshToken(refreshToken) // token is verified
 
-  const user = await userdbServices.findUserById(userId)
+  const user = await userRepository.findUserById(userId)
   if (!user) {
     throw new BadRequestError('user not found')
   }
-  const authData = await authdbServices.findAuthByUserId(userId)
+  const authData = await authRepository.findAuthByUserId(userId)
   if (!authData) {
     throw new BadRequestError('Auth data not found')
   }
@@ -187,7 +187,7 @@ const refresh = async (refreshToken: string) => {
 }
 
 const logoutUser = async (user: IUser) => {
-  const authData = await authdbServices.findAuthByUserId(user.id)
+  const authData = await authRepository.findAuthByUserId(user.id)
   if (!authData) {
     throw new BadRequestError('Auth data not found')
   }
