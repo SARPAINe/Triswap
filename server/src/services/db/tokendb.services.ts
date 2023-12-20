@@ -39,12 +39,12 @@ const getTokenPairs = async () => {
       {
         model: Token,
         as: 'tokenA',
-        attributes: ['token', 'address'],
+        attributes: ['name', 'address'],
       },
       {
         model: Token,
         as: 'tokenB',
-        attributes: ['token', 'address'],
+        attributes: ['name', 'address'],
       },
     ],
   })
@@ -72,12 +72,12 @@ const getTokenPair = async (tokenName: string) => {
       {
         model: Token,
         as: 'tokenA',
-        attributes: ['token', 'address'],
+        attributes: ['name', 'address'],
       },
       {
         model: Token,
         as: 'tokenB',
-        attributes: ['token', 'address'],
+        attributes: ['name', 'address'],
       },
     ],
     attributes: {
@@ -121,7 +121,7 @@ const findTokenById = async (tokenId: string) => {
 const findTokenByName = async (tokenName: string) => {
   const token = await Token.findOne({
     where: {
-      token: tokenName,
+      name: tokenName,
     },
     attributes: {
       exclude: ['createdAt', 'updatedAt'],

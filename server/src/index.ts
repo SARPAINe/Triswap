@@ -2,8 +2,6 @@ import { logger } from './config/winston.config'
 import { closeDB, startDB, startServer } from './server'
 import { config } from './config'
 
-console.log(config)
-
 const main = async () => {
   let seqOptions
   const { nodeEnv } = config.app

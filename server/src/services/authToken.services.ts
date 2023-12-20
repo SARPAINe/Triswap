@@ -3,10 +3,11 @@ import { v4 as uuidV4 } from 'uuid'
 import { config } from '../config'
 import { BadRequestError } from '../errors'
 import { ITokens } from '../interfaces'
+import User from '../models/user.models'
 
-const generateTokens = (userId: string): ITokens => {
-  const accessToken = generateAccessToken(userId)
-  const refreshToken = generateRefreshToken(userId)
+const generateTokens = (user: User): ITokens => {
+  const accessToken = generateAccessToken(user)
+  const refreshToken = generateRefreshToken(user)
   const tokens: ITokens = {
     access: {
       ...accessToken,
@@ -18,10 +19,10 @@ const generateTokens = (userId: string): ITokens => {
   return tokens
 }
 
-const generateRefreshToken = (userId: string) => {
+const generateRefreshToken = (user: User) => {
   const payload = {
-    sub: userId,
-    iat: Math.floor(Date.now() / 1000), // this is in seconds
+    sub: user.id,
+    role: user.role,
   }
 
   const expiresIn = config.jwt.refresh_token.expiresIn
@@ -31,14 +32,16 @@ const generateRefreshToken = (userId: string) => {
 
   return {
     refresh_token: signedToken,
-    expires: new Date((payload.iat + expiresIn) * 1000).toISOString(),
+    expires: new Date(
+      (Math.floor(Date.now() / 1000) + expiresIn) * 1000,
+    ).toISOString(),
   }
 }
 
-const generateAccessToken = (userId: string) => {
+const generateAccessToken = (user: User) => {
   const payload = {
-    sub: userId,
-    iat: Math.floor(Date.now() / 1000), // this is in seconds
+    sub: user.id,
+    role: user.role,
   }
   const expiresIn = config.jwt.access_token.expiresIn
   const signedToken = jwt.sign(payload, config.jwt.access_token.secret, {
@@ -47,7 +50,9 @@ const generateAccessToken = (userId: string) => {
   console.log(signedToken)
   return {
     access_token: signedToken,
-    expires: new Date((payload.iat + expiresIn) * 1000).toISOString(),
+    expires: new Date(
+      (Math.floor(Date.now() / 1000) + expiresIn) * 1000,
+    ).toISOString(),
   }
 }
 

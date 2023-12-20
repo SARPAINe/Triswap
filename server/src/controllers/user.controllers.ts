@@ -19,7 +19,6 @@ const getAllUsers: RequestHandler = async (req, res) => {
 
 const getUser: RequestHandler = async (req, res) => {
   const { id: userId } = req.params
-  console.log(userId)
   const user = await userServices.getSingleUser(userId)
 
   if (!user) {

@@ -50,12 +50,11 @@ const loginUser = async (
   loginObj: LoginUserDTO,
 ): Promise<{ user: User; tokens: ITokens }> => {
   const { email, password } = loginObj
-  // check if user exists
   const user = await userdbServices.findUserByEmail(email)
   if (!user) {
     throw new UnauthenticatedError('Invalid Credentials')
   }
-  // check if password matches
+
   const authData = await authdbServices.findAuthByUserId(user.id)
   if (!authData) {
     throw new CustomAPIError(
@@ -71,7 +70,7 @@ const loginUser = async (
     throw new UnauthenticatedError('Invalid Credentials')
   }
 
-  const tokens = authTokenServices.generateTokens(user.id)
+  const tokens = authTokenServices.generateTokens(user)
   authData.refreshToken = tokens.refresh.refresh_token
   await authData.save()
 
@@ -166,6 +165,11 @@ const resetPassword = async (
 
 const refresh = async (refreshToken: string) => {
   const { userId } = await authTokenServices.verifyRefreshToken(refreshToken) // token is verified
+
+  const user = await userdbServices.findUserById(userId)
+  if (!user) {
+    throw new BadRequestError('user not found')
+  }
   const authData = await authdbServices.findAuthByUserId(userId)
   if (!authData) {
     throw new BadRequestError('Auth data not found')
@@ -175,7 +179,7 @@ const refresh = async (refreshToken: string) => {
     throw new BadRequestError('Old refresh token reuse')
   }
 
-  const tokens = authTokenServices.generateTokens(userId)
+  const tokens = authTokenServices.generateTokens(user)
   authData.refreshToken = tokens.refresh.refresh_token
   await authData.save()
 
