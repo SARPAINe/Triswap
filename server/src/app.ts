@@ -17,6 +17,7 @@ import authRoutes from './routes/v1/auth.routes'
 import userRoutes from './routes/v1/user.routes'
 import tokenRoutes from './routes/v1/token.routes'
 import adminRoutes from './routes/v1/admin.routes'
+import transactionHashRoutes from './routes/v1/transactionHash.routes'
 
 // middlewares
 import errorHandlerMiddleware from './middlewares/errorHandler.middleware'
@@ -48,6 +49,7 @@ app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/user', userRoutes)
 app.use('/api/v1/token', tokenRoutes)
 app.use('/api/v1/admin', adminRoutes)
+app.use('/api/v1/transaction-hash', transactionHashRoutes)
 
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)

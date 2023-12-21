@@ -86,11 +86,12 @@ const getTokenPair = async (tokenName: string) => {
   })
 
   const formattedTokenPairs = tokenPairData.map(pair => {
-    const isLTCInTokenA = pair.tokenA.name === tokenName // jodi tokenA LTC hoy
+    const isTokenNameInTokenA =
+      pair.tokenA.name.toUpperCase() === tokenName.toUpperCase()
     return {
       id: pair.id,
       pairAddress: pair.pairAddress,
-      token: isLTCInTokenA ? pair.tokenB : pair.tokenA,
+      token: isTokenNameInTokenA ? pair.tokenB : pair.tokenA,
     }
   })
 

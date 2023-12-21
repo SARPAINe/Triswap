@@ -13,8 +13,13 @@ const getMe = async (userObj: User) => {
   return userObj
 }
 
+const countUsers = async () => {
+  return await userRepository.countUsers()
+}
+
 export const userServices = {
   getAllUsers,
   getSingleUser,
   getMe,
+  countUsers,
 }

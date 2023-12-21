@@ -27,10 +27,16 @@ const getTokenPair = async (tokenId: string) => {
   return tokenPairData
 }
 
+const getTokenPrices = async () => {
+  // call coin gekko every 10 secs
+  // send response to client side
+}
+
 export const tokenServices = {
   getAllTokens,
   createTokenPair,
   getToken,
   getAllTokenPairs,
   getTokenPair,
+  getTokenPrices,
 }

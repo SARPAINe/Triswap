@@ -15,7 +15,6 @@ const jwtOptions = {
 // handles the access token only
 const strategy = new JwtStrategy(jwtOptions, async (jwt_payload, done) => {
   try {
-    console.log({ jwt_payload })
     const id = jwt_payload.sub
     const user = (await userRepository.findUserById(id)) as IUser
 
@@ -25,7 +24,6 @@ const strategy = new JwtStrategy(jwtOptions, async (jwt_payload, done) => {
       return done(null, user) // attach user to request object
     }
   } catch (err) {
-    console.log(err)
     done(err)
   }
 })

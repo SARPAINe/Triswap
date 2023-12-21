@@ -52,5 +52,17 @@ const updateMe: RequestHandler = async (req, res) => {
   res.status(StatusCodes.OK).json(apiResponse)
 }
 
+const countUsers: RequestHandler = async (req, res) => {
+  const userCount = await userServices.countUsers()
+  const apiResponse = {
+    success: true,
+    message: 'Count of registered users retrieved.',
+    data: {
+      count: userCount,
+    },
+  }
+  res.status(StatusCodes.OK).json(apiResponse)
+}
+
 // const deleteUser
-export { getAllUsers, getUser, getMe, updateMe }
+export { getAllUsers, getUser, getMe, updateMe, countUsers }

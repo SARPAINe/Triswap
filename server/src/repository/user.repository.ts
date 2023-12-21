@@ -43,9 +43,20 @@ const findUserById = async (userId: string) => {
   return user
 }
 
+const countUsers = async () => {
+  const userCount = await User.count({
+    attributes: {
+      exclude: ['createdAt', 'updatedAt'],
+    },
+  })
+
+  return userCount
+}
+
 export const userRepository = {
   createUser,
   findAllUsers,
   findUserByEmail,
   findUserById,
+  countUsers,
 }

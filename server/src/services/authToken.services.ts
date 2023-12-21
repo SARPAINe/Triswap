@@ -47,7 +47,6 @@ const generateAccessToken = (user: User) => {
   const signedToken = jwt.sign(payload, config.jwt.access_token.secret, {
     expiresIn,
   })
-  console.log(signedToken)
   return {
     access_token: signedToken,
     expires: new Date(
