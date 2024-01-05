@@ -9,12 +9,12 @@ interface SeqOptions {
 }
 
 const main = async () => {
-  let server: Server | undefined = undefined
+  let server: Server | undefined
   try {
     let seqOptions: SeqOptions = { alter: true }
     const { nodeEnv } = config.app
     if (nodeEnv === 'development') {
-      seqOptions = { force: true }
+      seqOptions = { alter: true }
     }
     if (nodeEnv === 'staging') {
       seqOptions = { alter: true }

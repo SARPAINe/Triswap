@@ -26,7 +26,7 @@ const startServer = async () => {
 
 const closeServer = async (server: Server) => {
   try {
-    await new Promise(resolve => server.close(resolve))
+    await new Promise(resolve => server.close(resolve)) // why promisified?
     logger.info('Server closed.')
   } catch (err) {
     logger.error('Error closing server:', err)
@@ -35,8 +35,8 @@ const closeServer = async (server: Server) => {
 
 const startDB = async (opt: object) => {
   try {
-    await sequelize.authenticate()
-    await sequelize.sync(opt)
+    await sequelize.authenticate() // for checking connection to db
+    await sequelize.sync(opt) // how the models will be synced
 
     defineAssociations()
     logger.info('Connection to the database has been established successfully.')

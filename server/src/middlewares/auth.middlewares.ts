@@ -2,21 +2,21 @@ import { RequestHandler } from 'express'
 import {
   BadRequestError,
   ForbiddenError,
-  UnauthenticatedError,
+  // UnauthenticatedError,
 } from '../errors'
 import User from '../models/user.models'
 import passport from 'passport'
 import { authRepository } from '../repository/auth.repository'
 import { IUser } from '../interfaces'
 
-const isAuthenticated = passport.authenticate('jwt', { session: false })
+const isAuthenticated = passport.authenticate('jwt', { session: false }) // in routes
 
-const isAuthenticatedLocal: RequestHandler = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    return next()
-  }
-  throw new UnauthenticatedError('User not authorized to view this resource')
-}
+// const isAuthenticatedLocal: RequestHandler = (req, res, next) => {
+//   if (req.isAuthenticated()) {
+//     return next()
+//   }
+//   throw new UnauthenticatedError('User not authorized to view this resource')
+// }
 
 const isAdmin: RequestHandler = (req, res, next) => {
   // assuming passport has attached user
@@ -28,6 +28,7 @@ const isAdmin: RequestHandler = (req, res, next) => {
 }
 
 const isEmailVerified: RequestHandler = async (req, res, next) => {
+  // assuming passport has attached user
   const user = req.user as IUser
   const userId = user.id
 
@@ -42,4 +43,4 @@ const isEmailVerified: RequestHandler = async (req, res, next) => {
   throw new ForbiddenError('Forbidden - Email not verified')
 }
 
-export { isAuthenticated, isAdmin, isEmailVerified, isAuthenticatedLocal }
+export { isAuthenticated, isAdmin, isEmailVerified }
