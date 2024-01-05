@@ -1,29 +1,25 @@
-import { CreateTokenPairDTO, CreateTokenPairWIdDTO } from '../dto'
+import { CreateTokenDTO, CreateTokenPairDTO } from '../dto'
 import Token from '../models/token.models'
 import TokenPair from '../models/tokenPair.models'
 import { BadRequestError } from '../errors'
 import { Op } from 'sequelize'
 import sequelize from '../config/sequelize.config'
 
+const createToken = async (tokenObj: CreateTokenDTO) => {
+  const newToken = await Token.create({
+    ...tokenObj,
+  })
+  return newToken
+}
+
 const createTokenPair = async (tokenPairObj: CreateTokenPairDTO) => {
-  const { userId, pairAddress, tokenA, tokenB } = tokenPairObj
+  const { userId, pairAddress, tokenAId, tokenBId } = tokenPairObj
   const transaction = await sequelize.transaction()
   try {
-    const tokenAData = await Token.create(
-      { ...tokenA, userId },
+    const newTokenPair = await TokenPair.create(
+      { userId, pairAddress, tokenAId, tokenBId },
       { transaction },
     )
-    const tokenBData = await Token.create(
-      { ...tokenB, userId },
-      { transaction },
-    )
-    const pair: CreateTokenPairWIdDTO = {
-      pairAddress,
-      tokenAId: tokenAData.id,
-      tokenBId: tokenBData.id,
-      userId,
-    }
-    const newTokenPair = await TokenPair.create({ ...pair }, { transaction })
     transaction.commit()
     return newTokenPair
   } catch (err) {
@@ -138,4 +134,5 @@ export const tokenRepository = {
   createTokenPair,
   getTokenPairs,
   getTokenPair,
+  createToken,
 }

@@ -24,6 +24,7 @@ const registerUser = async (
 ): Promise<{
   user: IUser
   verificationToken: string
+  tokens: ITokens
 }> => {
   const { password, ...userData } = userObj
   const hashedPassword = await cryptoServices.hashPassword(password)
@@ -34,7 +35,11 @@ const registerUser = async (
     password: hashedPassword,
     verificationToken,
   }
-  await authRepository.createAuth(authObj)
+  const authData = await authRepository.createAuth(authObj)
+  const tokens = authTokenServices.generateTokens(newUser)
+  authData.refreshToken = tokens.refresh.refresh_token
+  await authData.save()
+
   emailServices.sendVerificationEmail(newUser.email, verificationToken)
 
   const user = {
@@ -43,7 +48,7 @@ const registerUser = async (
     role: newUser.role,
   }
 
-  return { user, verificationToken }
+  return { user, verificationToken, tokens }
 }
 
 const loginUser = async (

@@ -7,11 +7,12 @@ import { IUser } from '../interfaces'
 
 const registerUser: RequestHandler = async (req, res) => {
   const userObj = req.body as RegisterUserDTO
-  const { user, verificationToken } = await authServices.registerUser(userObj)
+  const { user, verificationToken, tokens } =
+    await authServices.registerUser(userObj)
   const apiResponse = {
     success: true,
     message: 'User has been successfully registered. Please verify your email.',
-    data: { user, verificationToken },
+    data: { user, verificationToken, tokens },
   }
   res.status(StatusCodes.CREATED).json(apiResponse)
 }

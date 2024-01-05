@@ -1,22 +1,32 @@
 import { logger } from './config/winston.config'
-import { closeDB, startDB, startServer } from './server'
+import { closeDB, closeServer, startDB, startServer } from './server'
 import { config } from './config'
+import { type Server } from 'http'
+
+interface SeqOptions {
+  alter?: boolean
+  force?: boolean
+}
 
 const main = async () => {
-  let seqOptions
-  const { nodeEnv } = config.app
+  let server: Server | undefined = undefined
   try {
+    let seqOptions: SeqOptions = { alter: true }
+    const { nodeEnv } = config.app
     if (nodeEnv === 'development') {
       seqOptions = { force: true }
     }
     if (nodeEnv === 'staging') {
       seqOptions = { alter: true }
     }
-    await startServer()
-    await startDB(seqOptions) // this needs dot env
+    await startDB(seqOptions)
+    server = await startServer()
   } catch (err) {
-    logger.error(err)
     await closeDB()
+    if (server) {
+      await closeServer(server)
+    }
+    logger.error(err)
     process.exit(1)
   }
 }

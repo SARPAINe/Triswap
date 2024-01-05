@@ -1,4 +1,5 @@
 import express from 'express'
+import { createServer } from 'node:http'
 import compression from 'compression'
 import passport from 'passport'
 import 'express-async-errors'
@@ -53,5 +54,9 @@ app.use('/api/v1/transaction-hash', transactionHashRoutes)
 
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)
+
+const httpServer = createServer(app)
+
+export { app, httpServer }
 
 export default app
