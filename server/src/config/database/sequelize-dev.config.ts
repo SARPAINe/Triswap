@@ -6,7 +6,7 @@ const password = process.env.DB_DEV_PASSWORD!
 const host = process.env.DB_DEV_HOST!
 
 export const setupDevDB = (): Sequelize => {
-  const sequelizeOptions: Options = { host, dialect: 'mysql' }
+  const sequelizeOptions: Options = { host, dialect: 'mysql', logging: false }
   const sequelize = new Sequelize(database, user, password, sequelizeOptions)
   return sequelize
 }

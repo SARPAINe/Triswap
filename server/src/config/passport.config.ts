@@ -1,6 +1,6 @@
 import passport from 'passport'
 import passportJwt from 'passport-jwt'
-import { userdbServices } from '../services/db/userdb.services'
+import { userRepository } from '../repository/user.repository'
 import { config } from '.'
 import { IUser } from '../interfaces'
 
@@ -16,7 +16,7 @@ const jwtOptions = {
 const strategy = new JwtStrategy(jwtOptions, async (jwt_payload, done) => {
   try {
     const id = jwt_payload.sub
-    const user = (await userdbServices.findUserById(id)) as IUser
+    const user = (await userRepository.findUserById(id)) as IUser
 
     if (!user) {
       return done(null, false, { message: 'Invalid token' })
@@ -24,7 +24,6 @@ const strategy = new JwtStrategy(jwtOptions, async (jwt_payload, done) => {
       return done(null, user) // attach user to request object
     }
   } catch (err) {
-    console.log(err)
     done(err)
   }
 })

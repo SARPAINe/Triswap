@@ -4,7 +4,6 @@ import { logger } from '../config/winston.config'
 
 const errorHandlerMiddleware: ErrorRequestHandler = (err, req, res, _next) => {
   logger.error(err.message)
-  console.log(err)
   const customError = {
     statusCode: err.statusCode ?? StatusCodes.INTERNAL_SERVER_ERROR,
     error: err.name ?? 'InternalServerError',
@@ -25,10 +24,10 @@ const errorHandlerMiddleware: ErrorRequestHandler = (err, req, res, _next) => {
 
   const apiResponse = {
     success: false,
-    message: customError.error,
+    message: customError.error, // error name
     error: {
       status: customError.statusCode,
-      error: customError.error,
+      error: customError.error, // name of error
       message: customError.message,
     },
   }

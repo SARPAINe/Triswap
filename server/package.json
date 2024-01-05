@@ -8,7 +8,7 @@
   "scripts": {
     "build": "npx tsc",
     "build:watch": "npx tsc --watch",
-    "start": "cross-env NODE_ENV=production node ./build/server.js",
+    "start": "cross-env NODE_ENV=production node ./build/index.js",
     "start:dev": "cross-env NODE_ENV=development PORT=3333 nodemon",
     "start:stg": "npm run build && pm2 start ecosystem.config.js --only bcs-be-stg",
     "restart:stg": "npm run build && pm2 stop bcs-be-stg --silent || true && pm2 start ecosystem.config.js --only bcs-be-stg",
@@ -40,6 +40,7 @@
     "@types/express-session": "^1.17.10",
     "@types/jest": "^29.5.10",
     "@types/morgan": "^1.9.9",
+    "@types/node": "^20.10.5",
     "@types/nodemailer": "^6.4.14",
     "@types/passport": "^1.0.15",
     "@types/passport-jwt": "^3.0.13",
@@ -89,6 +90,7 @@
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "sequelize": "^6.35.1",
+    "socket.io": "^4.7.2",
     "uuid": "^9.0.1",
     "web3": "^4.2.2",
     "winston": "^3.11.0"

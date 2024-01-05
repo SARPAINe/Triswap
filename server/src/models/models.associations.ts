@@ -2,6 +2,7 @@ import User from './user.models'
 import Auth from './auth.models'
 import Token from './token.models'
 import TokenPair from './tokenPair.models'
+import TransactionHash from './transactionHash.model'
 
 const defineAssociations = () => {
   // user-auth association one-to-one
@@ -11,6 +12,10 @@ const defineAssociations = () => {
   // user-token association one-to-many
   User.hasMany(Token, { foreignKey: 'userId' })
   Token.belongsTo(User, { foreignKey: 'userId' })
+
+  // user-transaction_hash association one-to-many
+  User.hasMany(TransactionHash, { foreignKey: 'userId' })
+  TransactionHash.belongsTo(User, { foreignKey: 'userId' })
 
   // token-tokenPair association many-to-many (as 'tokenA' and 'tokenB')
   Token.hasMany(TokenPair, { foreignKey: 'tokenAId', as: 'tokenA' })

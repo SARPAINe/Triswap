@@ -6,7 +6,7 @@ import {
 } from '../errors'
 import User from '../models/user.models'
 import passport from 'passport'
-import { authdbServices } from '../services/db/authdb.services'
+import { authRepository } from '../repository/auth.repository'
 import { IUser } from '../interfaces'
 
 const isAuthenticated = passport.authenticate('jwt', { session: false })
@@ -31,7 +31,7 @@ const isEmailVerified: RequestHandler = async (req, res, next) => {
   const user = req.user as IUser
   const userId = user.id
 
-  const authData = await authdbServices.findAuthByUserId(userId)
+  const authData = await authRepository.findAuthByUserId(userId)
   if (!authData) {
     throw new BadRequestError('Auth data not found')
   }

@@ -1,8 +1,24 @@
 import { RequestHandler } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { tokenServices } from '../services/token.services'
-import { CreateTokenPairDTO } from '../dto'
+import { CreateTokenDTO, CreateTokenPairDTO } from '../dto'
 import User from '../models/user.models'
+
+const createToken: RequestHandler = async (req, res) => {
+  const { id: userId } = req.user as User
+  const tokenObj: CreateTokenDTO = {
+    userId,
+    ...req.body,
+  }
+  const token = await tokenServices.createToken(tokenObj)
+
+  const apiResponse = {
+    success: true,
+    message: `New ${req.body.name} token created`,
+    data: token,
+  }
+  res.status(StatusCodes.CREATED).json(apiResponse)
+}
 
 const getAllTokens: RequestHandler = async (req, res) => {
   const tokens = await tokenServices.getAllTokens()
@@ -35,7 +51,6 @@ const createTokenPair: RequestHandler = async (req, res) => {
     ...req.body,
   }
   const newPair = await tokenServices.createTokenPair(tokenPairData)
-
   const apiResponse = {
     success: true,
     message: 'New Token pair Created',
@@ -65,4 +80,11 @@ const getTokenPairs: RequestHandler = async (req, res) => {
   res.status(StatusCodes.OK).json(apiResponse)
 }
 
-export { getAllTokens, getToken, getTokenPairs, getTokenPair, createTokenPair }
+export {
+  getAllTokens,
+  getToken,
+  getTokenPairs,
+  getTokenPair,
+  createTokenPair,
+  createToken,
+}
