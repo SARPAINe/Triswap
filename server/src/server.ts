@@ -33,10 +33,16 @@ const closeServer = async (server: Server) => {
   }
 }
 
-const startDB = async (opt: object) => {
+const startDB = async (opt: object = {}) => {
   try {
     await sequelize.authenticate() // for checking connection to db
-    await sequelize.sync(opt) // how the models will be synced
+    if (Object.keys(opt).length === 0) {
+      logger.info('DB ran with no sync')
+      await sequelize.sync()
+    } else {
+      sequelize.sync(opt)
+    }
+    // how the models will be synced
 
     defineAssociations()
     logger.info('Connection to the database has been established successfully.')

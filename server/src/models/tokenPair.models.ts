@@ -11,7 +11,7 @@ class TokenPair extends Model {
   declare tokenBId: string
   declare pairAddress: string
 
-  // Define associations
+  // Defined in associations
   declare tokenA: Token
   declare tokenB: Token
 }

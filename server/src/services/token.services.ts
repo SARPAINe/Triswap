@@ -16,6 +16,19 @@ const getToken = async (tokenId: string) => {
   return token
 }
 
+const getTokenByName = async (tokenName: string) => {
+  const token = await tokenRepository.findTokenByName(tokenName)
+  return token
+}
+
+const checkTokenExistence = async (tokenName: string) => {
+  const token = await tokenRepository.findTokenByName(tokenName)
+  if (!token) {
+    return false
+  }
+  return true
+}
+
 const createTokenPair = async (tokenPairObj: CreateTokenPairDTO) => {
   const newTokenPair = await tokenRepository.createTokenPair(tokenPairObj)
   return newTokenPair
@@ -44,4 +57,6 @@ export const tokenServices = {
   getTokenPair,
   getTokenPrices,
   createToken,
+  getTokenByName,
+  checkTokenExistence,
 }

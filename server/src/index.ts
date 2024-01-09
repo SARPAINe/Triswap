@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 import { logger } from './config/winston.config'
 import { closeDB, closeServer, startDB, startServer } from './server'
 import { config } from './config'
@@ -11,13 +12,13 @@ interface SeqOptions {
 const main = async () => {
   let server: Server | undefined
   try {
-    let seqOptions: SeqOptions = { alter: true }
+    let seqOptions: SeqOptions = {}
     const { nodeEnv } = config.app
     if (nodeEnv === 'development') {
-      seqOptions = { alter: true }
+      // seqOptions = { alter: true }
     }
     if (nodeEnv === 'staging') {
-      seqOptions = { alter: true }
+      // seqOptions = { alter: true }
     }
     await startDB(seqOptions)
     server = await startServer()

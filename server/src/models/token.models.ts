@@ -37,6 +37,11 @@ Token.init(
       unique: true,
       allowNull: false,
     },
+    systemGenerated: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false,
+    },
   },
   {
     sequelize,

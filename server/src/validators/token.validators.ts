@@ -10,4 +10,5 @@ export const createTokenSchema = Joi.object({
   name: Joi.string().trim().uppercase().required(),
   address: Joi.string().trim().required(),
   description: Joi.string().trim(),
+  systemGenerated: Joi.boolean(),
 })

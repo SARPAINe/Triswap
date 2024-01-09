@@ -4,6 +4,7 @@ export interface CreateTokenDTO {
   description?: string
   address: string
   userId: string
+  systemGenerated?: boolean
 }
 
 export interface CreateTokenPairDTO {

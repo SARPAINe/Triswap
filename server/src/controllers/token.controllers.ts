@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes'
 import { tokenServices } from '../services/token.services'
 import { CreateTokenDTO, CreateTokenPairDTO } from '../dto'
 import User from '../models/user.models'
+import { BadRequestError } from '../errors'
 
 const createToken: RequestHandler = async (req, res) => {
   const { id: userId } = req.user as User
@@ -39,6 +40,36 @@ const getToken: RequestHandler = async (req, res) => {
     success: true,
     message: 'Get single tokens',
     data: token,
+  }
+  res.status(StatusCodes.OK).json(apiResponse)
+}
+
+const getTokenByName: RequestHandler = async (req, res) => {
+  const { name } = req.params
+  const token = await tokenServices.getTokenByName(name.toUpperCase())
+
+  const apiResponse = {
+    success: true,
+    message: 'Get single tokens',
+    data: token,
+  }
+  res.status(StatusCodes.OK).json(apiResponse)
+}
+
+const checkTokenExistence: RequestHandler = async (req, res) => {
+  const { name } = req.query as { name: string }
+
+  if (!name) {
+    throw new BadRequestError('Name has to be provided')
+  }
+
+  const tokenExists = await tokenServices.checkTokenExistence(
+    name.toUpperCase(),
+  )
+
+  const apiResponse = {
+    success: true,
+    data: tokenExists,
   }
   res.status(StatusCodes.OK).json(apiResponse)
 }
@@ -87,4 +118,6 @@ export {
   getTokenPair,
   createTokenPair,
   createToken,
+  getTokenByName,
+  checkTokenExistence,
 }

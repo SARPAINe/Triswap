@@ -13,8 +13,10 @@ if (!fs.existsSync(logDirectory)) {
 const accessLogStream = fs.createWriteStream(logFilePath, { flags: 'a' })
 
 const morganConfig =
-  process.env.NODE_ENV === 'production'
+  process.env.NODE_ENV === 'staging'
     ? morgan('combined', { stream: accessLogStream })
-    : morgan('dev')
+    : morgan(
+        ':date[web] :method :url :status :response-time ms - :res[content-length]',
+      )
 
 export default morganConfig
