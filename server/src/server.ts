@@ -5,6 +5,7 @@ import sequelize from './config/sequelize.config'
 import { logger } from './config/winston.config'
 import defineAssociations from './models/models.associations'
 import setupSocket from './socket'
+import cronJobs from './cron'
 
 // interface DbOptions {
 //   alter?: boolean
@@ -14,6 +15,7 @@ import setupSocket from './socket'
 const startServer = async () => {
   try {
     setupSocket() // initialize socket io
+    // cronJobs()
     httpServer.listen(config.app.port, () => {
       logger.info(`server running on port ${config.app.port}`)
     })
