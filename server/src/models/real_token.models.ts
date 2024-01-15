@@ -4,6 +4,9 @@ import sequelize from './../config/sequelize.config'
 class RealToken extends Model {
   declare id: string
   declare name: string
+  declare tokenName: string
+  declare symbol: string
+  declare icon: string
   declare description: string
   declare price: number[]
   static async addPrices(
@@ -27,15 +30,31 @@ class RealToken extends Model {
 
 RealToken.init(
   {
-    id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
-    },
+    // id: {
+    //   type: DataTypes.UUID,
+    //   defaultValue: DataTypes.UUIDV4,
+    //   primaryKey: true,
+    // },
     name: {
       type: DataTypes.STRING,
       unique: true,
       allowNull: false,
+      primaryKey: true,
+    },
+    tokenName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: sequelize.literal('"name"'),
+    },
+    symbol: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: sequelize.literal('"name"'),
+    },
+    icon: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: sequelize.literal('"name"'),
     },
     description: {
       type: DataTypes.STRING,
