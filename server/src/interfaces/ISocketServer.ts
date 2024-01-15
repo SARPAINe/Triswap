@@ -1,7 +1,18 @@
 interface CryptoData {
-  usd: number
-  last_updated_at: number
+  tokenName: string
+  symbol: string
+  icon: string
+  name: string
+  price: number[]
+  currentPrice: number
 }
+// updates.push({
+//   tokenName,
+//   symbol: realToken.symbol, // Adjust according to your model structure
+//   icon: realToken.icon, // Adjust according to your model structure
+//   price: realToken.price,
+//   currentPrice,
+// })
 
 // Define the interface for the entire object
 interface CryptoPrices {
@@ -22,7 +33,7 @@ export interface ServerToClientEvents {
   noArg: () => void
   basicEmit: (a: number, b: string, c: Buffer) => void
   withAck: (d: string, callback: (e: number) => void) => void
-  updateAnalytics: (data: CryptoPrices) => void
+  updateAnalytics: (data: CryptoData[]) => void
 }
 
 export interface ClientToServerEvents {

@@ -15,7 +15,7 @@ import cronJobs from './cron'
 const startServer = async () => {
   try {
     setupSocket() // initialize socket io
-    // cronJobs()
+    cronJobs()
     httpServer.listen(config.app.port, () => {
       logger.info(`server running on port ${config.app.port}`)
     })
