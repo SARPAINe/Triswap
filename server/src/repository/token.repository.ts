@@ -1,15 +1,38 @@
-import { CreateTokenDTO, CreateTokenPairDTO } from '../dto'
+import {
+  AddPriceDTO,
+  CreateRealTokenDTO,
+  CreateTokenDTO,
+  CreateTokenPairDTO,
+} from '../dto'
 import Token from '../models/token.models'
 import TokenPair from '../models/tokenPair.models'
 import { BadRequestError } from '../errors'
 import { Op } from 'sequelize'
 import sequelize from '../config/sequelize.config'
+import RealToken from '../models/real_token.models'
+import { token } from 'morgan'
 
 const createToken = async (tokenObj: CreateTokenDTO) => {
   const newToken = await Token.create({
     ...tokenObj,
   })
   return newToken
+}
+
+const createRealToken = async (tokenObj: CreateRealTokenDTO) => {
+  const newToken = await RealToken.create({
+    ...tokenObj,
+  })
+  return newToken
+}
+
+const addPrice = async (tokenObj: AddPriceDTO) => {
+  // const tokenData = await findTokenByName(tokenObj.name)
+  // if (!tokenData) {
+  //   throw new BadRequestError('Token not found')
+  // }
+  const tokenData = await RealToken.addPrices(tokenObj.name, tokenObj.price)
+  return tokenData
 }
 
 const createTokenPair = async (tokenPairObj: CreateTokenPairDTO) => {
@@ -127,6 +150,15 @@ const findTokenByName = async (tokenName: string) => {
   return token
 }
 
+const findRealTokenByName = async (tokenName: string) => {
+  const token = await RealToken.findOne({
+    where: {
+      name: tokenName,
+    },
+  })
+  return token
+}
+
 export const tokenRepository = {
   findAllTokens,
   findTokenById,
@@ -135,4 +167,6 @@ export const tokenRepository = {
   getTokenPairs,
   getTokenPair,
   createToken,
+  createRealToken,
+  addPrice,
 }

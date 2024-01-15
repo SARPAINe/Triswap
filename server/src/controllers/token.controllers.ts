@@ -1,7 +1,12 @@
 import { RequestHandler } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { tokenServices } from '../services/token.services'
-import { CreateTokenDTO, CreateTokenPairDTO } from '../dto'
+import {
+  CreateTokenDTO,
+  CreateTokenPairDTO,
+  CreateRealTokenDTO,
+  AddPriceDTO,
+} from '../dto'
 import User from '../models/user.models'
 import { BadRequestError } from '../errors'
 
@@ -19,6 +24,40 @@ const createToken: RequestHandler = async (req, res) => {
     data: token,
   }
   res.status(StatusCodes.CREATED).json(apiResponse)
+}
+
+const createRealToken: RequestHandler = async (req, res) => {
+  const tokenObj: CreateRealTokenDTO = {
+    ...req.body,
+  }
+
+  const token = await tokenServices.createRealToken(tokenObj)
+  const apiResponse = {
+    success: true,
+    message: `New ${req.body.name} token created`,
+    data: token,
+  }
+  res.status(StatusCodes.CREATED).json(apiResponse)
+}
+
+const addPrice: RequestHandler = async (req, res) => {
+  const newPrices: AddPriceDTO = {
+    ...req.body,
+  }
+
+  if (!Array.isArray(newPrices.price)) {
+    return res
+      .status(400)
+      .json({ error: 'Invalid input. Please provide an array of prices.' })
+  }
+
+  const realToken = await tokenServices.addPrice(newPrices)
+  const apiResponse = {
+    success: true,
+    message: `New prices added`,
+    data: realToken,
+  }
+  res.status(StatusCodes.OK).json(apiResponse)
 }
 
 const getAllTokens: RequestHandler = async (req, res) => {
@@ -120,4 +159,6 @@ export {
   createToken,
   getTokenByName,
   checkTokenExistence,
+  createRealToken,
+  addPrice,
 }

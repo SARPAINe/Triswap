@@ -1,8 +1,23 @@
-import { CreateTokenDTO, CreateTokenPairDTO } from '../dto'
+import {
+  AddPriceDTO,
+  CreateRealTokenDTO,
+  CreateTokenDTO,
+  CreateTokenPairDTO,
+} from '../dto'
 import { tokenRepository } from '../repository/token.repository'
 
 const createToken = async (tokenObj: CreateTokenDTO) => {
   const newToken = await tokenRepository.createToken(tokenObj)
+  return newToken
+}
+
+const createRealToken = async (tokenObj: CreateRealTokenDTO) => {
+  const newToken = await tokenRepository.createRealToken(tokenObj)
+  return newToken
+}
+
+const addPrice = async (newPrices: AddPriceDTO) => {
+  const newToken = await tokenRepository.addPrice(newPrices)
   return newToken
 }
 
@@ -59,4 +74,6 @@ export const tokenServices = {
   createToken,
   getTokenByName,
   checkTokenExistence,
+  createRealToken,
+  addPrice,
 }

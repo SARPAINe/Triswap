@@ -13,3 +13,13 @@ export interface CreateTokenPairDTO {
   tokenAId: string
   tokenBId: string
 }
+
+export interface CreateRealTokenDTO {
+  userId: string
+  price: number[]
+}
+
+export interface AddPriceDTO {
+  name: string
+  price: number[]
+}

@@ -12,3 +12,13 @@ export const createTokenSchema = Joi.object({
   description: Joi.string().trim(),
   systemGenerated: Joi.boolean(),
 })
+
+export const createRealTokenSchema = Joi.object({
+  name: Joi.string().trim().required(),
+  description: Joi.string().trim(),
+  price: Joi.array(),
+})
+
+export const addPriceSchema = Joi.object({
+  price: Joi.array().items(Joi.number()).required(),
+})
