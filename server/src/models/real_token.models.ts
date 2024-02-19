@@ -26,6 +26,12 @@ class RealToken extends Model {
       throw new Error(`Error adding prices: ${error.message}`)
     }
   }
+
+  // Define the virtual field
+  get latestPrice(): number {
+    const prices = this.getDataValue('price')
+    return prices.length > 0 ? prices[prices.length - 1] : 0
+  }
 }
 
 RealToken.init(
@@ -70,6 +76,14 @@ RealToken.init(
       set(value: number[]) {
         // Store the array as a JSON string
         this.setDataValue('price', JSON.stringify(value))
+      },
+    },
+    currentPrice: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        const prices = this.getDataValue('price')
+        const priceArray = prices ? JSON.parse(prices) : []
+        return priceArray.length > 0 ? priceArray[priceArray.length - 1] : 0
       },
     },
   },

@@ -7,6 +7,7 @@ class Token extends Model {
   declare name: string
   declare description: string
   declare address: string
+  declare decimals: number
 }
 
 Token.init(
@@ -40,6 +41,11 @@ Token.init(
     systemGenerated: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
+      allowNull: false,
+    },
+    decimals: {
+      type: DataTypes.TINYINT,
+      defaultValue: 18,
       allowNull: false,
     },
   },

@@ -10,6 +10,7 @@ import {
   getTokenByName,
   checkTokenExistence,
   addPrice,
+  getRealToken,
 } from '../../controllers/token.controllers'
 import { isAdmin, isAuthenticated } from '../../middlewares/auth.middlewares'
 import { validator } from '../../middlewares/validator.middleware'
@@ -33,6 +34,7 @@ router
 router
   .route('/real-tokens')
   .post([validator('body', createRealTokenSchema)], createRealToken)
+router.route('/real-tokens').get(getRealToken)
 router.route('/real-tokens/add-price').post(addPrice)
 router.route('/pair').get(getTokenPairs)
 router.route('/pair/:id').get(getTokenPair)

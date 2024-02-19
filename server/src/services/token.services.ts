@@ -26,6 +26,11 @@ const getAllTokens = async () => {
   return tokens
 }
 
+const getRealTokens = async () => {
+  const tokens = await tokenRepository.findAllRealTokens()
+  return tokens
+}
+
 const getToken = async (tokenId: string) => {
   const token = await tokenRepository.findTokenByName(tokenId)
   return token
@@ -76,4 +81,5 @@ export const tokenServices = {
   checkTokenExistence,
   createRealToken,
   addPrice,
+  getRealTokens,
 }

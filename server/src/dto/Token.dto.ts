@@ -5,6 +5,7 @@ export interface CreateTokenDTO {
   address: string
   userId: string
   systemGenerated?: boolean
+  decimals?: number
 }
 
 export interface CreateTokenPairDTO {

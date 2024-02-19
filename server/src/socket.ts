@@ -15,7 +15,8 @@ let io = new Server<
   SocketData
 >(httpServer, {
   cors: {
-    origin: 'http://localhost:5173',
+    // origin: ['http://localhost:5173', 'http://192.168.54.45:5173'],
+    origin: '*',
   },
   //this option doesn't work
   // transports: ['polling'],

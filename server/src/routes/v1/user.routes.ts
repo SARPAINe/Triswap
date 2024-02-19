@@ -15,7 +15,8 @@ import {
 const router = Router()
 
 router.use(isAuthenticated)
-router.route('/').get([isEmailVerified, isAdmin], getAllUsers)
+// router.route('/').get([isEmailVerified, isAdmin], getAllUsers)
+router.route('/').get(isAdmin, getAllUsers)
 router.route('/get-me').get(getMe)
 router.route('/update-me').get([isEmailVerified], updateMe)
 router.route('/count-users').get([isAdmin], countUsers)

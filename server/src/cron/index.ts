@@ -3,7 +3,7 @@ import { fetchCoins } from './jobs/fetchCoins'
 
 function cronJobs() {
   const job = new CronJob(
-    '*/10 * * * * *', // cronTime
+    '*/60 * * * * *', // cronTime
     fetchCoins, // onTick
     null, // onComplete
     true, // start

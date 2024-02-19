@@ -11,6 +11,7 @@ export const createTokenSchema = Joi.object({
   address: Joi.string().trim().required(),
   description: Joi.string().trim(),
   systemGenerated: Joi.boolean(),
+  decimals: Joi.number(),
 })
 
 export const createRealTokenSchema = Joi.object({

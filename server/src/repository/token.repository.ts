@@ -129,6 +129,11 @@ const findAllTokens = async () => {
   return tokens
 }
 
+const findAllRealTokens = async () => {
+  const tokens = await RealToken.findAll()
+  return tokens
+}
+
 const findTokenById = async (tokenId: string) => {
   const token = await Token.findByPk(tokenId, {
     attributes: {
@@ -169,4 +174,5 @@ export const tokenRepository = {
   createToken,
   createRealToken,
   addPrice,
+  findAllRealTokens,
 }

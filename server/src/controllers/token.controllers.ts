@@ -71,6 +71,17 @@ const getAllTokens: RequestHandler = async (req, res) => {
   res.status(StatusCodes.OK).json(apiResponse)
 }
 
+const getRealToken: RequestHandler = async (req, res) => {
+  const tokens = await tokenServices.getRealTokens()
+
+  const apiResponse = {
+    success: true,
+    message: 'Get all real tokens',
+    data: tokens,
+  }
+  res.status(StatusCodes.OK).json(apiResponse)
+}
+
 const getToken: RequestHandler = async (req, res) => {
   const { id: tokenId } = req.params
   const token = await tokenServices.getToken(tokenId.toUpperCase())
@@ -161,4 +172,5 @@ export {
   checkTokenExistence,
   createRealToken,
   addPrice,
+  getRealToken,
 }
