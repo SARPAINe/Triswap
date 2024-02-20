@@ -6,9 +6,9 @@ module.exports = {
       script: "./build/index.js",
       env: {
         NODE_ENV: "staging",
-        PORT: 3000
+        PORT: 3333
       },
-      instances: 2,
+      instances: 1,
       max_memory_restart: "300M",
       autorestart: true,
       log_date_format: "YYYY-MM-DD HH:mm:ss",
